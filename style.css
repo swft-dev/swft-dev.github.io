@@ -1,45 +1,4 @@
-body {
-  flex-direction: column !important;
-  height: auto !important;
-  min-height: 100vh;
-  padding: 1rem;
-}
-
-main, aside {
-  width: 100% !important;
-  height: auto !important;
-  padding: 1rem 0;
-}
-
-main > section {
-  width: 100% !important;
-}
-
-@media screen and (min-width: 768px) {
-  body {
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    height: 100vh !important;
-    padding: 0;
-  }
-
-  main {
-    width: 60% !important;
-    height: 100vh !important;
-  }
-
-  main > section {
-    width: 75% !important;
-    max-width: 500px;
-  }
-
-  aside {
-    width: 35% !important;
-    height: 100vh !important;
-    padding-right: 2rem;
-  }
-  
-  aside > section {
-    width: 100% !important;
-  }
+main {
+    min-width: 500px;
+    max-width: 1000px;
 }
