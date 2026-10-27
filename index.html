@@ -8,7 +8,7 @@
         <title>Swft</title>
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>     
     </head>
-    <body class="bg-gray-200 grid grid-cols-2">
+    <body class="bg-gray-200 flex justify-between">
         <main class="flex justify-center items-center h-screen flex-col">
             <section class="shadow-2xl p-6 rounded-2xl
             bg-white w-1/2 flex justify-center items-center flex-col text-black">
@@ -67,9 +67,18 @@
             </section>
         </main>
         <aside class="flex justify-center items-center h-screen flex-col">
-            <section class="shadow-2xl p-6 rounded-2xl bg-white 
-            w-full flex justify-center items-center flex-col text-black">
-            <h1 class="font-bold">GitHub Repostories</h1>
+            <section class="shadow-2xl p-6 rounded-2xl bg-white
+            flex flex-col gap-3">
+            <h1 class="font-bold"><u>GitHub Repostories</u></h1>
+            <a class="border rounded-sm bg-[#0e1116]" href="https://github.com/swft-dev/CPP">
+                <div class="text-white p-3" href="https://github.com/swft-dev/CPP">C++</div>
+            </a>
+            <a class="border rounded-sm bg-[#0e1116]" href="https://github.com/swft-dev/markdown-to-html">
+                <div class="text-white p-3">Markdown-HTML</div>
+            </a>
+            <a class="border rounded-sm bg-[#0e1116]" href="https://github.com/swft-dev/Currency-Converter">
+                <div class="text-white p-3" href="https://github.com/swft-dev/Currency-Converter">Currency Converter</div>
+            </a>
             </section>
         </aside>
         <script src="script.js"></script>
