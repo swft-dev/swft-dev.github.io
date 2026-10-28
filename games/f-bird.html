@@ -1,0 +1,3374 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bolt the Brass-Wing | Clockwork Avian Arcade</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brass-light: #fde68a;
+            --brass-mid: #d97706;
+            --brass-dark: #78350f;
+            --copper-mid: #b45309;
+            --steel-dark: #0f172a;
+            --panel-bg: rgba(15, 23, 42, 0.92);
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #070b14;
+            font-family: 'Inter', sans-serif;
+            color: #f8fafc;
+            touch-action: manipulation;
+        }
+
+        .font-display {
+            font-family: 'Cinzel', serif;
+        }
+
+        .font-mono-tech {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Steampunk Brass Panel Styling */
+        .brass-panel {
+            background: linear-gradient(160deg, rgba(30, 41, 59, 0.96) 0%, rgba(15, 23, 42, 0.98) 100%);
+            border: 2px solid #d97706;
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.8),
+                inset 0 1px 0 rgba(253, 230, 138, 0.35),
+                inset 0 0 24px rgba(217, 119, 6, 0.12);
+            position: relative;
+        }
+
+        .brass-panel::before {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border: 1px dashed rgba(217, 119, 6, 0.35);
+            border-radius: 0.65rem;
+            pointer-events: none;
+        }
+
+        /* Tactical Mechanical Button */
+        .mech-btn {
+            background: linear-gradient(180deg, #f59e0b 0%, #b45309 100%);
+            border: 2px solid #fde68a;
+            color: #0f172a;
+            font-weight: 800;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+            box-shadow: 
+                0 5px 0 #78350f,
+                0 8px 16px rgba(0, 0, 0, 0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.6);
+            transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+            cursor: pointer;
+        }
+
+        .mech-btn:hover {
+            filter: brightness(1.08);
+        }
+
+        .mech-btn:active {
+            transform: translateY(4px);
+            box-shadow: 
+                0 1px 0 #78350f,
+                0 3px 6px rgba(0, 0, 0, 0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.4);
+        }
+
+        .mech-btn-secondary {
+            background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+            border: 1.5px solid #94a3b8;
+            color: #f8fafc;
+            font-weight: 600;
+            box-shadow: 
+                0 4px 0 #0f172a,
+                0 6px 12px rgba(0, 0, 0, 0.45),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.15s ease;
+            cursor: pointer;
+        }
+
+        .mech-btn-secondary:hover {
+            border-color: #fbbf24;
+            color: #fef3c7;
+        }
+
+        .mech-btn-secondary:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #0f172a;
+        }
+
+        /* Corner Rivets Decoration */
+        .rivet-tl, .rivet-tr, .rivet-bl, .rivet-br {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 9999px;
+            background: radial-gradient(circle at 30% 30%, #fde68a, #92400e);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+            z-index: 10;
+        }
+        .rivet-tl { top: 8px; left: 8px; }
+        .rivet-tr { top: 8px; right: 8px; }
+        .rivet-bl { bottom: 8px; left: 8px; }
+        .rivet-br { bottom: 8px; right: 8px; }
+
+        /* Score Pop Animation */
+        @keyframes scorePop {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.28); color: #fde68a; }
+            100% { transform: scale(1); }
+        }
+
+        .score-pop {
+            animation: scorePop 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Modal Backdrop & Entry */
+        .modal-enter {
+            animation: modalDropIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        @keyframes modalDropIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-36px) scale(0.94);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Custom Scrollbar for Modals */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #b45309;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f59e0b;
+        }
+
+        /* Range Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            cursor: pointer;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            background: #1e293b;
+            height: 8px;
+            border-radius: 999px;
+            border: 1px solid #475569;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            margin-top: -5px;
+            background: linear-gradient(180deg, #fde68a, #d97706);
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            border: 2px solid #78350f;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+        }
+    </style>
+</head>
+<body class="relative flex items-center justify-center w-screen h-screen bg-slate-950 select-none overflow-hidden">
+
+    <!-- Ambient Outer Frame Background for Ultrawide Desktop Screens -->
+    <div class="fixed inset-0 pointer-events-none opacity-30 bg-[radial-gradient(circle_at_center,_#1e293b_0%,_#020617_100%)]"></div>
+
+    <!-- Main Game Container: Responsive Fullscreen or Centered Arcade Cabinet Ratio -->
+    <div id="game-wrapper" class="relative w-full h-full max-w-[540px] max-h-[960px] sm:h-[94vh] sm:rounded-2xl overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.95)] border-0 sm:border-4 sm:border-amber-700/80 bg-slate-900 flex flex-col">
+        
+        <!-- Primary 2D Render Canvas -->
+        <canvas id="game-canvas" class="block w-full h-full cursor-pointer"></canvas>
+
+        <!-- Impact Flash Overlay -->
+        <div id="flash-overlay" class="pointer-events-none absolute inset-0 bg-white opacity-0 transition-opacity duration-75 z-20"></div>
+
+        <!-- Top HUD Bar (Always Accessible) -->
+        <div class="pointer-events-none absolute top-0 left-0 right-0 p-3 sm:p-4 flex items-start justify-between z-30">
+            <!-- Left: Best Score & Current Chassis Badge -->
+            <div class="pointer-events-auto flex flex-col gap-1.5">
+                <div class="flex items-center gap-2 bg-slate-900/85 border border-amber-500/50 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-lg">
+                    <svg class="w-4 h-4 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M5 3h14a2 2 0 0 1 2 2v2a5 5 0 0 1-3.07 4.62A6.01 6.01 0 0 1 13 15.92V19h4v2H7v-2h4v-3.08a6.01 6.01 0 0 1-4.93-4.3A5 5 0 0 1 3 7V5a2 2 0 0 1 2-2zm0 2v2a3 3 0 0 0 1.4 2.54A6.03 6.03 0 0 1 6 8V5H5zm14 0h-1v3c0 .53-.14 1.05-.4 1.54A3 3 0 0 0 19 7V5z"/>
+                    </svg>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Best</span>
+                    <span id="hud-best-score" class="font-mono-tech text-sm font-bold text-amber-300">0</span>
+                </div>
+
+                <!-- Telemetry / FPS Readout (Hidden by default unless enabled) -->
+                <div id="telemetry-panel" class="hidden bg-slate-950/85 border border-cyan-500/40 px-2.5 py-1.5 rounded-lg font-mono-tech text-[11px] text-cyan-300 leading-tight shadow-md">
+                    <div>FPS: <span id="tel-fps" class="text-white">60</span> | DT: <span id="tel-dt">16.6</span>ms</div>
+                    <div>Y: <span id="tel-y">0</span> | VY: <span id="tel-vy">0.0</span></div>
+                    <div>PT: <span id="tel-particles">0</span> | PIPES: <span id="tel-pipes">0</span></div>
+                </div>
+            </div>
+
+            <!-- Center: Live Big Score Counter (Visible in Get Ready & Playing) -->
+            <div id="live-score-container" class="hidden flex-col items-center justify-center mt-1">
+                <div id="live-score" class="font-display text-5xl sm:text-6xl font-black text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.85)] tracking-tight" style="-webkit-text-stroke: 2px #78350f;">
+                    0
+                </div>
+                <div id="atmosphere-indicator" class="text-[10px] font-mono-tech uppercase tracking-widest text-amber-300/90 bg-slate-900/70 px-2 py-0.5 rounded-full border border-amber-500/30 mt-0.5">
+                    Daylight Shift
+                </div>
+            </div>
+
+            <!-- Right: Quick Control Buttons -->
+            <div class="pointer-events-auto flex items-center gap-1.5">
+                <!-- Hitbox Inspector Toggle -->
+                <button id="btn-toggle-hitbox" title="Toggle Hitbox Inspector (H)" class="mech-btn-secondary p-2 rounded-xl flex items-center justify-center">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="9"/>
+                        <line x1="12" y1="3" x2="12" y2="21"/>
+                        <line x1="3" y1="12" x2="21" y2="12"/>
+                    </svg>
+                </button>
+
+                <!-- Audio Mute/Unmute Toggle -->
+                <button id="btn-toggle-mute" title="Toggle Audio (M)" class="mech-btn-secondary p-2 rounded-xl flex items-center justify-center">
+                    <svg id="icon-sound-on" class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                    </svg>
+                    <svg id="icon-sound-off" class="w-4 h-4 text-rose-400 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                        <line x1="23" y1="9" x2="17" y2="15"/>
+                        <line x1="17" y1="9" x2="23" y2="15"/>
+                    </svg>
+                </button>
+
+                <!-- Pause Button (Visible during active flight) -->
+                <button id="btn-pause" title="Pause Game (P / Esc)" class="hidden mech-btn-secondary p-2 rounded-xl items-center justify-center">
+                    <svg id="icon-pause" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="6" y="4" width="4" height="16" rx="1"/>
+                        <rect x="14" y="4" width="4" height="16" rx="1"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- TITLE SCREEN OVERLAY                                              -->
+        <!-- ================================================================= -->
+        <div id="screen-title" class="pointer-events-none absolute inset-0 flex flex-col justify-between p-5 sm:p-7 z-20">
+            <!-- Top Title Branding -->
+            <div class="mt-14 text-center modal-enter">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/40 text-amber-300 text-xs font-mono-tech uppercase tracking-widest mb-2 shadow-inner">
+                    <span>Aether-Works Automaton No. 04</span>
+                </div>
+                <h1 class="font-display text-4xl sm:text-5xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-400 to-amber-700 drop-shadow-[0_4px_10px_rgba(0,0,0,0.9)]">
+                    BOLT
+                </h1>
+                <p class="font-display text-sm sm:text-base font-bold tracking-[0.26em] text-amber-100 uppercase -mt-1 drop-shadow">
+                    The Brass-Wing
+                </p>
+            </div>
+
+            <!-- Middle Spacer (Bolt flies across canvas here) -->
+            <div class="flex-1 flex flex-col items-center justify-end pb-4">
+                <div class="bg-slate-950/75 border border-amber-500/30 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs text-slate-300 flex items-center gap-2 shadow-lg">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Chassis Equipped:</span>
+                    <span id="title-skin-name" class="font-bold text-amber-300">Brass Classic</span>
+                </div>
+            </div>
+
+            <!-- Bottom Action Deck -->
+            <div class="pointer-events-auto flex flex-col gap-3 w-full max-w-sm mx-auto mb-4">
+                <button id="btn-start-game" class="mech-btn w-full py-3.5 px-6 rounded-xl text-lg font-display tracking-wider uppercase flex items-center justify-center gap-3">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                    </svg>
+                    <span>Engage Flight</span>
+                </button>
+
+                <div class="grid grid-cols-3 gap-2.5">
+                    <button id="btn-open-hangar" class="mech-btn-secondary py-2.5 px-3 rounded-xl flex flex-col items-center justify-center gap-1 text-xs">
+                        <svg class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                        </svg>
+                        <span>Hangar</span>
+                    </button>
+
+                    <button id="btn-open-stats" class="mech-btn-secondary py-2.5 px-3 rounded-xl flex flex-col items-center justify-center gap-1 text-xs">
+                        <svg class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="8" r="6"/>
+                            <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+                        </svg>
+                        <span>Medals</span>
+                    </button>
+
+                    <button id="btn-open-settings" class="mech-btn-secondary py-2.5 px-3 rounded-xl flex flex-col items-center justify-center gap-1 text-xs">
+                        <svg class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                        <span>Config</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- "GET READY" OVERLAY                                               -->
+        <!-- ================================================================= -->
+        <div id="screen-ready" class="hidden pointer-events-none absolute inset-0 flex flex-col items-center justify-center p-6 z-20">
+            <div class="mt-16 text-center">
+                <h2 class="font-display text-3xl sm:text-4xl font-black text-amber-300 tracking-wider uppercase drop-shadow-[0_4px_8px_rgba(0,0,0,0.95)]">
+                    Prime Thrusters
+                </h2>
+                <p class="text-xs sm:text-sm font-medium text-slate-200 mt-1 bg-slate-950/75 px-4 py-1.5 rounded-full border border-amber-500/40 inline-block shadow-lg">
+                    Tap, Click, or Press <span class="text-amber-300 font-mono-tech font-bold">[SPACE]</span> to Flap
+                </p>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- PAUSE OVERLAY                                                     -->
+        <!-- ================================================================= -->
+        <div id="screen-pause" class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-6 z-40">
+            <div class="brass-panel w-full max-w-xs rounded-2xl p-6 text-center modal-enter">
+                <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+                <h3 class="font-display text-2xl font-bold text-amber-300 tracking-wider uppercase mb-1">Chronometer Halted</h3>
+                <p class="text-xs text-slate-400 mb-6">Gears locked in stasis</p>
+                <div class="flex flex-col gap-3">
+                    <button id="btn-resume" class="mech-btn py-3 rounded-xl font-display uppercase tracking-wider text-sm">
+                        Resume Flight
+                    </button>
+                    <button id="btn-pause-restart" class="mech-btn-secondary py-2.5 rounded-xl text-sm">
+                        Restart Run
+                    </button>
+                    <button id="btn-pause-menu" class="mech-btn-secondary py-2.5 rounded-xl text-sm">
+                        Return to Title
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- GAME OVER SCOREBOARD OVERLAY                                      -->
+        <!-- ================================================================= -->
+        <div id="screen-gameover" class="hidden absolute inset-0 bg-slate-950/75 backdrop-blur-[3px] flex flex-col items-center justify-center p-4 sm:p-6 z-30">
+            <div class="w-full max-w-sm modal-enter">
+                <!-- Header Banner -->
+                <div class="text-center mb-3">
+                    <h2 class="font-display text-3xl sm:text-4xl font-black tracking-wider uppercase text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-400 to-amber-700 drop-shadow-[0_4px_6px_rgba(0,0,0,0.95)]">
+                        System Failure
+                    </h2>
+                    <p id="gameover-reason" class="text-xs font-mono-tech text-amber-200/80 uppercase tracking-widest">
+                        Hull Integrity Compromised
+                    </p>
+                </div>
+
+                <!-- Scoreboard Brass Card -->
+                <div class="brass-panel rounded-2xl p-5 mb-4">
+                    <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+
+                    <div class="grid grid-cols-2 gap-4 items-center">
+                        <!-- Left Column: Rendered Vector Medal Canvas -->
+                        <div class="flex flex-col items-center justify-center border-r border-amber-500/25 pr-3">
+                            <span class="text-[11px] font-mono-tech uppercase tracking-widest text-slate-400 mb-1.5">Commendation</span>
+                            <div class="relative w-24 h-24 rounded-full bg-slate-950/90 border-2 border-amber-600/50 flex items-center justify-center shadow-inner">
+                                <canvas id="medal-canvas" width="96" height="96" class="w-24 h-24"></canvas>
+                            </div>
+                            <span id="medal-title" class="mt-2 text-xs font-bold text-amber-300 tracking-wide">No Medal</span>
+                        </div>
+
+                        <!-- Right Column: Score & High Score Readout -->
+                        <div class="flex flex-col justify-between pl-1 space-y-3">
+                            <div>
+                                <div class="text-xs font-mono-tech uppercase tracking-wider text-slate-400">Pipes Cleared</div>
+                                <div id="go-score" class="font-display text-4xl font-black text-white leading-none mt-1">0</div>
+                            </div>
+
+                            <div class="pt-2 border-t border-slate-700/80">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-mono-tech uppercase tracking-wider text-slate-400">Record</span>
+                                    <span id="badge-new-best" class="hidden px-1.5 py-0.5 text-[10px] font-mono-tech font-bold uppercase bg-amber-500 text-slate-950 rounded animate-pulse">
+                                        New Best
+                                    </span>
+                                </div>
+                                <div id="go-best" class="font-display text-3xl font-extrabold text-amber-400 leading-none mt-1">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Unlock Notification Banner (If a new skin or medal was earned) -->
+                    <div id="unlock-banner" class="hidden mt-4 pt-3 border-t border-amber-500/30 flex items-center justify-center gap-2 text-xs text-emerald-300 font-semibold">
+                        <svg class="w-4 h-4 shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span id="unlock-banner-text">New Chassis Unlocked in Hangar!</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col gap-2.5">
+                    <button id="btn-replay" class="mech-btn w-full py-3.5 px-6 rounded-xl text-base font-display tracking-wider uppercase flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polyline points="23 4 23 10 17 10"/>
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                        </svg>
+                        <span>Re-Launch [Space]</span>
+                    </button>
+
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <button id="btn-go-hangar" class="mech-btn-secondary py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                            </svg>
+                            <span>Workshop</span>
+                        </button>
+                        <button id="btn-go-title" class="mech-btn-secondary py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                <polyline points="9 22 9 12 15 12 15 22"/>
+                            </svg>
+                            <span>Title Screen</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- HANGAR / CHASSIS SKINS MODAL                                      -->
+        <!-- ================================================================= -->
+        <div id="modal-hangar" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 z-50">
+            <div class="brass-panel w-full max-w-md max-h-[86vh] rounded-2xl p-5 flex flex-col modal-enter">
+                <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+                
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between pb-3 border-b border-amber-500/30">
+                    <div>
+                        <h3 class="font-display text-xl font-bold text-amber-300 tracking-wider uppercase">Aether Hangar</h3>
+                        <p class="text-xs text-slate-400">Select or unlock custom clockwork chassis</p>
+                    </div>
+                    <button data-close-modal="modal-hangar" class="mech-btn-secondary p-2 rounded-lg">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Live Skin Preview Box -->
+                <div class="my-3 bg-slate-950/90 border border-amber-500/40 rounded-xl p-3 flex items-center gap-4">
+                    <canvas id="hangar-preview-canvas" width="110" height="90" class="w-[110px] h-[90px] bg-slate-900/80 rounded-lg border border-slate-700 shrink-0"></canvas>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-[11px] font-mono-tech uppercase text-amber-400" id="preview-skin-tag">Active Chassis</div>
+                        <h4 class="font-display text-lg font-bold text-white truncate" id="preview-skin-title">Brass Classic</h4>
+                        <p class="text-xs text-slate-300 leading-relaxed mt-0.5" id="preview-skin-desc">
+                            Standard-issue burnished brass plating with pressurized steam exhaust.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Skins List -->
+                <div id="skins-list-container" class="flex-1 overflow-y-auto space-y-2.5 pr-1">
+                    <!-- Populated dynamically via JS -->
+                </div>
+
+                <!-- Footer Override Toggle for instant testing -->
+                <div class="pt-3 mt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                    <span>Master Engineer Override (Unlock All)</span>
+                    <button id="btn-dev-unlock-skins" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/40 font-mono-tech text-[11px]">
+                        Toggle Override
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- FLIGHT LOG / MEDALS & STATS MODAL                                 -->
+        <!-- ================================================================= -->
+        <div id="modal-stats" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 z-50">
+            <div class="brass-panel w-full max-w-md max-h-[86vh] rounded-2xl p-5 flex flex-col modal-enter">
+                <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+
+                <div class="flex items-center justify-between pb-3 border-b border-amber-500/30">
+                    <div>
+                        <h3 class="font-display text-xl font-bold text-amber-300 tracking-wider uppercase">Flight Log & Medals</h3>
+                        <p class="text-xs text-slate-400">Persistent black-box telemetry records</p>
+                    </div>
+                    <button data-close-modal="modal-stats" class="mech-btn-secondary p-2 rounded-lg">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto space-y-4 my-3 pr-1">
+                    <!-- Core Metrics Grid -->
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div class="bg-slate-900/90 border border-slate-700/80 p-3 rounded-xl">
+                            <div class="text-[11px] font-mono-tech uppercase text-slate-400">All-Time Record</div>
+                            <div id="stat-high-score" class="font-display text-2xl font-black text-amber-400 mt-0.5">0</div>
+                        </div>
+                        <div class="bg-slate-900/90 border border-slate-700/80 p-3 rounded-xl">
+                            <div class="text-[11px] font-mono-tech uppercase text-slate-400">Total Pipes Cleared</div>
+                            <div id="stat-total-pipes" class="font-display text-2xl font-black text-white mt-0.5">0</div>
+                        </div>
+                        <div class="bg-slate-900/90 border border-slate-700/80 p-3 rounded-xl">
+                            <div class="text-[11px] font-mono-tech uppercase text-slate-400">Sorties Flown</div>
+                            <div id="stat-games-played" class="font-display text-2xl font-black text-white mt-0.5">0</div>
+                        </div>
+                        <div class="bg-slate-900/90 border border-slate-700/80 p-3 rounded-xl">
+                            <div class="text-[11px] font-mono-tech uppercase text-slate-400">Total Wing Flaps</div>
+                            <div id="stat-total-flaps" class="font-display text-2xl font-black text-cyan-300 mt-0.5">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Medal Showcase -->
+                    <div>
+                        <h4 class="text-xs font-mono-tech uppercase tracking-wider text-amber-300 mb-2">Imperial Commendations</h4>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <div class="bg-slate-900/90 border border-amber-700/40 rounded-xl p-3 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-amber-900/40 border border-amber-600 flex items-center justify-center font-display font-bold text-amber-400">B</div>
+                                <div>
+                                    <div class="text-xs font-bold text-white">Bronze Cog</div>
+                                    <div class="text-[11px] text-slate-400">Score 10+ (<span id="medal-count-bronze" class="text-amber-300 font-mono-tech">0</span>x)</div>
+                                </div>
+                            </div>
+                            <div class="bg-slate-900/90 border border-slate-500/40 rounded-xl p-3 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-slate-700/50 border border-slate-300 flex items-center justify-center font-display font-bold text-slate-200">S</div>
+                                <div>
+                                    <div class="text-xs font-bold text-white">Silver Turbine</div>
+                                    <div class="text-[11px] text-slate-400">Score 20+ (<span id="medal-count-silver" class="text-amber-300 font-mono-tech">0</span>x)</div>
+                                </div>
+                            </div>
+                            <div class="bg-slate-900/90 border border-yellow-500/40 rounded-xl p-3 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-yellow-900/40 border border-yellow-400 flex items-center justify-center font-display font-bold text-yellow-300">G</div>
+                                <div>
+                                    <div class="text-xs font-bold text-white">Golden Chrono</div>
+                                    <div class="text-[11px] text-slate-400">Score 40+ (<span id="medal-count-gold" class="text-amber-300 font-mono-tech">0</span>x)</div>
+                                </div>
+                            </div>
+                            <div class="bg-slate-900/90 border border-cyan-400/40 rounded-xl p-3 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-cyan-900/40 border border-cyan-300 flex items-center justify-center font-display font-bold text-cyan-200">P</div>
+                                <div>
+                                    <div class="text-xs font-bold text-white">Platinum Aether</div>
+                                    <div class="text-[11px] text-slate-400">Score 80+ (<span id="medal-count-platinum" class="text-amber-300 font-mono-tech">0</span>x)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reset Data Section -->
+                <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
+                    <span id="reset-confirm-label" class="text-xs text-slate-400">Erase persistent localStorage log?</span>
+                    <button id="btn-reset-save" class="px-3 py-1.5 rounded-lg bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-500/40 text-xs font-semibold transition">
+                        Purge Records
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- SETTINGS / CALIBRATION MODAL                                      -->
+        <!-- ================================================================= -->
+        <div id="modal-settings" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 z-50">
+            <div class="brass-panel w-full max-w-md max-h-[86vh] rounded-2xl p-5 flex flex-col modal-enter">
+                <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
+
+                <div class="flex items-center justify-between pb-3 border-b border-amber-500/30">
+                    <div>
+                        <h3 class="font-display text-xl font-bold text-amber-300 tracking-wider uppercase">System Calibration</h3>
+                        <p class="text-xs text-slate-400">Audio synthesis, visuals, and diagnostic overlays</p>
+                    </div>
+                    <button data-close-modal="modal-settings" class="mech-btn-secondary p-2 rounded-lg">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto space-y-4 my-3 pr-1 text-sm">
+                    <!-- Master Volume -->
+                    <div class="bg-slate-900/80 border border-slate-800 p-3.5 rounded-xl">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-semibold text-slate-200">Synthesizer Master Volume</span>
+                            <span id="setting-vol-label" class="font-mono-tech text-xs text-amber-300">80%</span>
+                        </div>
+                        <input id="slider-volume" type="range" min="0" max="100" value="80" class="w-full">
+                    </div>
+
+                    <!-- Particle Density -->
+                    <div class="bg-slate-900/80 border border-slate-800 p-3.5 rounded-xl flex items-center justify-between">
+                        <div>
+                            <div class="font-semibold text-slate-200">Steam & Spark Density</div>
+                            <div class="text-xs text-slate-400">Exhaust puffs, rivets, and ambient dust</div>
+                        </div>
+                        <select id="select-particles" class="bg-slate-950 border border-amber-500/50 rounded-lg px-2.5 py-1.5 text-xs font-mono-tech text-amber-300 focus:outline-none">
+                            <option value="low">Low (30%)</option>
+                            <option value="medium">Medium (70%)</option>
+                            <option value="high" selected>Ultra (100%)</option>
+                        </select>
+                    </div>
+
+                    <!-- Time of Day Cycle -->
+                    <div class="bg-slate-900/80 border border-slate-800 p-3.5 rounded-xl flex items-center justify-between">
+                        <div>
+                            <div class="font-semibold text-slate-200">Atmospheric Cycle</div>
+                            <div class="text-xs text-slate-400">Dynamic shifts every 15 pipes or locked</div>
+                        </div>
+                        <select id="select-timeofday" class="bg-slate-950 border border-amber-500/50 rounded-lg px-2.5 py-1.5 text-xs font-mono-tech text-amber-300 focus:outline-none">
+                            <option value="dynamic" selected>Dynamic Cycle</option>
+                            <option value="day">Locked Daylight</option>
+                            <option value="sunset">Locked Sunset</option>
+                            <option value="night">Locked Night</option>
+                        </select>
+                    </div>
+
+                    <!-- Toggle Switches -->
+                    <div class="space-y-2">
+                        <label class="bg-slate-900/80 border border-slate-800 p-3 rounded-xl flex items-center justify-between cursor-pointer">
+                            <div>
+                                <div class="font-semibold text-slate-200">Kinetic Screen Shake & Hit-Stop</div>
+                                <div class="text-xs text-slate-400">80ms freeze frame & camera recoil on impact</div>
+                            </div>
+                            <input id="chk-screenshake" type="checkbox" checked class="w-4 h-4 accent-amber-500 rounded">
+                        </label>
+
+                        <label class="bg-slate-900/80 border border-slate-800 p-3 rounded-xl flex items-center justify-between cursor-pointer">
+                            <div>
+                                <div class="font-semibold text-slate-200">Hitbox & Vector Inspector</div>
+                                <div class="text-xs text-slate-400">Show collision radii, pipe bounds & velocity vector</div>
+                            </div>
+                            <input id="chk-hitbox" type="checkbox" class="w-4 h-4 accent-amber-500 rounded">
+                        </label>
+
+                        <label class="bg-slate-900/80 border border-slate-800 p-3 rounded-xl flex items-center justify-between cursor-pointer">
+                            <div>
+                                <div class="font-semibold text-slate-200">Live Telemetry Overlay</div>
+                                <div class="text-xs text-slate-400">Display FPS, frame delta, and physics coordinates</div>
+                            </div>
+                            <input id="chk-telemetry" type="checkbox" class="w-4 h-4 accent-amber-500 rounded">
+                        </label>
+                    </div>
+                </div>
+
+                <button data-close-modal="modal-settings" class="mech-btn w-full py-2.5 rounded-xl font-display uppercase tracking-wider text-sm">
+                    Save & Apply
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        /**
+         * ============================================================================
+         * BOLT THE BRASS-WING: 1:1 CLOCKWORK FLAPPY ARCADE ENGINE
+         * Pure Canvas 2D Vector Graphics + Synthesized Web Audio API
+         * Zero external assets, zero emojis, deterministic 60Hz delta-time physics.
+         * ============================================================================
+         */
+
+        // ----------------------------------------------------------------------------
+        // 1. PERSISTENT STORAGE & SKIN DEFINITIONS
+        // ----------------------------------------------------------------------------
+        const STORAGE_KEY = 'bolt_brass_wing_save_v1';
+
+        const CHASSIS_SKINS = [
+            {
+                id: 'brass_classic',
+                name: 'Brass Classic',
+                subtitle: 'Mk-I Standard Automaton',
+                description: 'Burnished imperial brass plating with copper rivets, amber optics, and pressurized white steam exhaust.',
+                unlockText: 'Default Factory Chassis',
+                isUnlocked: () => true,
+                colors: {
+                    bodyLight: '#fde68a',
+                    bodyMid: '#d97706',
+                    bodyDark: '#78350f',
+                    wingLight: '#fbbf24',
+                    wingDark: '#92400e',
+                    trim: '#fef3c7',
+                    goggleRim: '#451a03',
+                    lensGlow: '#38bdf8',
+                    gearColor: '#fcd34d',
+                    beakLight: '#f59e0b',
+                    beakDark: '#b45309',
+                    exhaustCore: 'rgba(248, 250, 252, 0.85)',
+                    exhaustOuter: 'rgba(203, 213, 225, 0.35)'
+                }
+            },
+            {
+                id: 'neon_cyber',
+                name: 'Neon Cyber-Hawk',
+                subtitle: 'Synth-Grid Interceptor',
+                description: 'Matte carbon-slate alloy with electric cyan circuit trim, magenta visor, and ionized plasma thrusters.',
+                unlockText: 'Score 10+ in a single run OR clear 25 total pipes',
+                isUnlocked: (save) => save.highScore >= 10 || save.totalPipes >= 25 || save.devUnlockAll,
+                colors: {
+                    bodyLight: '#64748b',
+                    bodyMid: '#1e293b',
+                    bodyDark: '#0f172a',
+                    wingLight: '#22d3ee',
+                    wingDark: '#0e7490',
+                    trim: '#38bdf8',
+                    goggleRim: '#0f172a',
+                    lensGlow: '#f43f5e',
+                    gearColor: '#22d3ee',
+                    beakLight: '#94a3b8',
+                    beakDark: '#475569',
+                    exhaustCore: 'rgba(34, 211, 238, 0.9)',
+                    exhaustOuter: 'rgba(244, 63, 94, 0.45)'
+                }
+            },
+            {
+                id: 'obsidian_stealth',
+                name: 'Obsidian Stealth',
+                subtitle: 'Night-Watch Recon Unit',
+                description: 'Blackened titanium armor plating, crimson tactical optics, and superheated ember-smoke exhaust.',
+                unlockText: 'Score 20+ in a single run OR clear 75 total pipes',
+                isUnlocked: (save) => save.highScore >= 20 || save.totalPipes >= 75 || save.devUnlockAll,
+                colors: {
+                    bodyLight: '#3f3f46',
+                    bodyMid: '#18181b',
+                    bodyDark: '#09090b',
+                    wingLight: '#ef4444',
+                    wingDark: '#7f1d1d',
+                    trim: '#dc2626',
+                    goggleRim: '#18181b',
+                    lensGlow: '#ef4444',
+                    gearColor: '#f87171',
+                    beakLight: '#52525b',
+                    beakDark: '#27272a',
+                    exhaustCore: 'rgba(251, 146, 60, 0.9)',
+                    exhaustOuter: 'rgba(63, 63, 70, 0.6)'
+                }
+            },
+            {
+                id: 'royal_gold',
+                name: 'Royal Sovereign',
+                subtitle: 'High-Court Chronometer',
+                description: '24-karat mirror-polished gold filigree, royal amethyst wing struts, and emerald crystal lenses.',
+                unlockText: 'Score 40+ in a single run OR clear 150 total pipes',
+                isUnlocked: (save) => save.highScore >= 40 || save.totalPipes >= 150 || save.devUnlockAll,
+                colors: {
+                    bodyLight: '#fef08a',
+                    bodyMid: '#eab308',
+                    bodyDark: '#713f12',
+                    wingLight: '#c084fc',
+                    wingDark: '#581c87',
+                    trim: '#fef9c3',
+                    goggleRim: '#3b0764',
+                    lensGlow: '#10b981',
+                    gearColor: '#fde047',
+                    beakLight: '#fde047',
+                    beakDark: '#ca8a04',
+                    exhaustCore: 'rgba(254, 240, 138, 0.95)',
+                    exhaustOuter: 'rgba(192, 132, 252, 0.45)'
+                }
+            },
+            {
+                id: 'plasma_phoenix',
+                name: 'Aether Phoenix',
+                subtitle: 'Solar-Core Prototype',
+                description: 'Radiant celestial-forged chassis powered by an unbound solar core that leaves a stardust wake.',
+                unlockText: 'Score 80+ in a single run OR clear 300 total pipes',
+                isUnlocked: (save) => save.highScore >= 80 || save.totalPipes >= 300 || save.devUnlockAll,
+                colors: {
+                    bodyLight: '#ffffff',
+                    bodyMid: '#fb923c',
+                    bodyDark: '#9a3412',
+                    wingLight: '#38bdf8',
+                    wingDark: '#0284c7',
+                    trim: '#bae6fd',
+                    goggleRim: '#7c2d12',
+                    lensGlow: '#ffffff',
+                    gearColor: '#7dd3fc',
+                    beakLight: '#fde047',
+                    beakDark: '#ea580c',
+                    exhaustCore: 'rgba(125, 211, 252, 0.95)',
+                    exhaustOuter: 'rgba(251, 146, 60, 0.55)'
+                }
+            }
+        ];
+
+        const DEFAULT_SAVE_DATA = {
+            highScore: 0,
+            totalGames: 0,
+            totalPipes: 0,
+            totalFlaps: 0,
+            selectedSkin: 'brass_classic',
+            devUnlockAll: false,
+            medals: {
+                bronze: 0,
+                silver: 0,
+                gold: 0,
+                platinum: 0
+            },
+            settings: {
+                volume: 80,
+                muted: false,
+                particleQuality: 'high',
+                timeOfDay: 'dynamic',
+                screenShake: true,
+                showHitbox: false,
+                showTelemetry: false
+            }
+        };
+
+        class SaveManager {
+            constructor() {
+                this.data = this.load();
+            }
+
+            load() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    if (!raw) return JSON.parse(JSON.stringify(DEFAULT_SAVE_DATA));
+                    const parsed = JSON.parse(raw);
+                    return {
+                        ...DEFAULT_SAVE_DATA,
+                        ...parsed,
+                        medals: { ...DEFAULT_SAVE_DATA.medals, ...(parsed.medals || {}) },
+                        settings: { ...DEFAULT_SAVE_DATA.settings, ...(parsed.settings || {}) }
+                    };
+                } catch (err) {
+                    console.warn('localStorage access unavailable, using in-memory state.', err);
+                    return JSON.parse(JSON.stringify(DEFAULT_SAVE_DATA));
+                }
+            }
+
+            save() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
+                } catch (err) {
+                    console.warn('Failed to persist save data:', err);
+                }
+            }
+
+            reset() {
+                this.data = JSON.parse(JSON.stringify(DEFAULT_SAVE_DATA));
+                this.save();
+            }
+
+            getActiveSkin() {
+                const found = CHASSIS_SKINS.find(s => s.id === this.data.selectedSkin);
+                if (found && found.isUnlocked(this.data)) {
+                    return found;
+                }
+                return CHASSIS_SKINS[0];
+            }
+        }
+
+        // ----------------------------------------------------------------------------
+        // 2. PROCEDURAL WEB AUDIO API SOUND ENGINE (ZERO EXTERNAL ASSETS)
+        // ----------------------------------------------------------------------------
+        class SoundEngine {
+            constructor(saveManager) {
+                this.saveManager = saveManager;
+                this.ctx = null;
+                this.noiseBuffer = null;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) {
+                        this.ctx = new AudioCtx();
+                        this.createNoiseBuffer();
+                    }
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            createNoiseBuffer() {
+                if (!this.ctx) return;
+                const bufferSize = this.ctx.sampleRate * 1.0;
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+                this.noiseBuffer = buffer;
+            }
+
+            getGainLevel(multiplier = 1.0) {
+                const s = this.saveManager.data.settings;
+                if (s.muted || s.volume <= 0) return 0;
+                return (s.volume / 100) * multiplier;
+            }
+
+            // Mechanical Wing Flap: Pneumatic Steam Puff + Pitch-Swept Whoosh
+            playFlap() {
+                this.init();
+                const vol = this.getGainLevel(0.32);
+                if (!this.ctx || vol <= 0) return;
+
+                const now = this.ctx.currentTime;
+
+                // 1. Mid-frequency mechanical spring whoosh
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(190, now);
+                osc.frequency.exponentialRampToValueAtTime(520, now + 0.085);
+                osc.frequency.exponentialRampToValueAtTime(260, now + 0.14);
+
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(vol, now + 0.015);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.16);
+
+                // 2. High-pressure steam exhaust burst (bandpass filtered white noise)
+                if (this.noiseBuffer) {
+                    const noise = this.ctx.createBufferSource();
+                    noise.buffer = this.noiseBuffer;
+
+                    const filter = this.ctx.createBiquadFilter();
+                    filter.type = 'bandpass';
+                    filter.frequency.setValueAtTime(1400, now);
+                    filter.frequency.exponentialRampToValueAtTime(2800, now + 0.11);
+                    filter.Q.value = 1.8;
+
+                    const nGain = this.ctx.createGain();
+                    nGain.gain.setValueAtTime(vol * 0.45, now);
+                    nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
+
+                    noise.connect(filter);
+                    filter.connect(nGain);
+                    nGain.connect(this.ctx.destination);
+                    noise.start(now);
+                    noise.stop(now + 0.12);
+                }
+            }
+
+            // Classic Flappy Score Chime (B5 -> E6 two-note brass bell harmonic)
+            playScore() {
+                this.init();
+                const vol = this.getGainLevel(0.35);
+                if (!this.ctx || vol <= 0) return;
+
+                const now = this.ctx.currentTime;
+
+                const playBellNote = (freq, startTime, duration) => {
+                    const osc1 = this.ctx.createOscillator();
+                    const osc2 = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+
+                    osc1.type = 'sine';
+                    osc2.type = 'triangle';
+                    osc1.frequency.setValueAtTime(freq, startTime);
+                    osc2.frequency.setValueAtTime(freq * 2, startTime);
+
+                    gain.gain.setValueAtTime(0.001, startTime);
+                    gain.gain.linearRampToValueAtTime(vol, startTime + 0.01);
+                    gain.gain.exponentialRampToValueAtTime(0.0008, startTime + duration);
+
+                    osc1.connect(gain);
+                    osc2.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc1.start(startTime);
+                    osc2.start(startTime);
+                    osc1.stop(startTime + duration + 0.02);
+                    osc2.stop(startTime + duration + 0.02);
+                };
+
+                // B5 (987.77 Hz) -> E6 (1318.51 Hz)
+                playBellNote(987.77, now, 0.11);
+                playBellNote(1318.51, now + 0.075, 0.36);
+            }
+
+            // Heavy Metallic Pipe Clang + Steam Rupture
+            playHitPipe() {
+                this.init();
+                const vol = this.getGainLevel(0.45);
+                if (!this.ctx || vol <= 0) return;
+
+                const now = this.ctx.currentTime;
+
+                // Inharmonic metallic clang oscillators
+                const freqs = [145, 218, 342, 512];
+                freqs.forEach((f, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = idx % 2 === 0 ? 'square' : 'sawtooth';
+                    osc.frequency.setValueAtTime(f, now);
+                    osc.frequency.exponentialRampToValueAtTime(f * 0.55, now + 0.28);
+
+                    gain.gain.setValueAtTime(vol / freqs.length, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.31);
+                });
+
+                // Noise impact crunch
+                if (this.noiseBuffer) {
+                    const noise = this.ctx.createBufferSource();
+                    noise.buffer = this.noiseBuffer;
+                    const filter = this.ctx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(1800, now);
+                    filter.frequency.exponentialRampToValueAtTime(220, now + 0.25);
+
+                    const nGain = this.ctx.createGain();
+                    nGain.gain.setValueAtTime(vol * 0.8, now);
+                    nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+                    noise.connect(filter);
+                    filter.connect(nGain);
+                    nGain.connect(this.ctx.destination);
+                    noise.start(now);
+                    noise.stop(now + 0.26);
+                }
+            }
+
+            // Secondary Ground Thud
+            playHitGround() {
+                this.init();
+                const vol = this.getGainLevel(0.4);
+                if (!this.ctx || vol <= 0) return;
+
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(120, now);
+                osc.frequency.exponentialRampToValueAtTime(32, now + 0.22);
+
+                gain.gain.setValueAtTime(vol, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            }
+
+            // Crisp Clockwork UI Button Click
+            playClick() {
+                this.init();
+                const vol = this.getGainLevel(0.25);
+                if (!this.ctx || vol <= 0) return;
+
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(820, now);
+                osc.frequency.exponentialRampToValueAtTime(320, now + 0.035);
+
+                gain.gain.setValueAtTime(vol, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.045);
+            }
+
+            // Scoreboard Tally Counter Tick
+            playTick(pitchFactor = 1.0) {
+                this.init();
+                const vol = this.getGainLevel(0.18);
+                if (!this.ctx || vol <= 0) return;
+
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600 * pitchFactor, now);
+
+                gain.gain.setValueAtTime(vol, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.035);
+            }
+
+            // Medal Earned Fanfare Arpeggio
+            playMedalFanfare() {
+                this.init();
+                const vol = this.getGainLevel(0.28);
+                if (!this.ctx || vol <= 0) return;
+
+                const now = this.ctx.currentTime;
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                notes.forEach((freq, idx) => {
+                    const start = now + idx * 0.075;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, start);
+
+                    gain.gain.setValueAtTime(0.001, start);
+                    gain.gain.linearRampToValueAtTime(vol, start + 0.015);
+                    gain.gain.exponentialRampToValueAtTime(0.001, start + 0.32);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(start);
+                    osc.stop(start + 0.34);
+                });
+            }
+        }
+
+        // ----------------------------------------------------------------------------
+        // 3. PARTICLE SYSTEM (STEAM PUFFS, BRASS SPARKS, SCORE CONFETTI, DUST MOTES)
+        // ----------------------------------------------------------------------------
+        class ParticleSystem {
+            constructor(saveManager) {
+                this.saveManager = saveManager;
+                this.particles = [];
+                this.ambientMotes = [];
+            }
+
+            getQualityMultiplier() {
+                const q = this.saveManager.data.settings.particleQuality;
+                if (q === 'low') return 0.35;
+                if (q === 'medium') return 0.7;
+                return 1.0;
+            }
+
+            initAmbientMotes(width, height) {
+                this.ambientMotes = [];
+                const count = 28;
+                for (let i = 0; i < count; i++) {
+                    this.ambientMotes.push({
+                        x: Math.random() * width,
+                        y: Math.random() * (height - 110),
+                        r: 1 + Math.random() * 2.2,
+                        vx: -0.25 - Math.random() * 0.45,
+                        vy: (Math.random() - 0.5) * 0.25,
+                        alpha: 0.15 + Math.random() * 0.35,
+                        phase: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+
+            // Exhaust puff emitted from Bolt's rear thruster
+            spawnExhaust(x, y, skin, isFlapBurst = false) {
+                const mult = this.getQualityMultiplier();
+                const count = Math.max(1, Math.round((isFlapBurst ? 9 : 1) * mult));
+
+                for (let i = 0; i < count; i++) {
+                    const angle = Math.PI + (Math.random() - 0.5) * 0.85;
+                    const speed = isFlapBurst ? (1.8 + Math.random() * 2.8) : (0.9 + Math.random() * 1.2);
+                    this.particles.push({
+                        type: 'steam',
+                        x: x + (Math.random() - 0.5) * 4,
+                        y: y + (Math.random() - 0.5) * 4,
+                        vx: Math.cos(angle) * speed - 1.5,
+                        vy: Math.sin(angle) * speed + (Math.random() - 0.5) * 0.6,
+                        size: isFlapBurst ? (5 + Math.random() * 5) : (3.5 + Math.random() * 3),
+                        growRate: 0.22 + Math.random() * 0.18,
+                        life: 1.0,
+                        decay: isFlapBurst ? (0.028 + Math.random() * 0.015) : (0.04 + Math.random() * 0.02),
+                        colorCore: skin.colors.exhaustCore,
+                        colorOuter: skin.colors.exhaustOuter
+                    });
+                }
+            }
+
+            // Brass sparks & loose rivets when colliding with a pipe or rail
+            spawnCollisionSparks(x, y) {
+                const mult = this.getQualityMultiplier();
+                const count = Math.max(8, Math.round(32 * mult));
+
+                for (let i = 0; i < count; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = 2.0 + Math.random() * 7.5;
+                    const isGearShard = i % 5 === 0;
+                    this.particles.push({
+                        type: isGearShard ? 'shard' : 'spark',
+                        x,
+                        y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed - 2.0,
+                        gravity: 0.26,
+                        size: isGearShard ? (3.5 + Math.random() * 2.5) : (2 + Math.random() * 2.5),
+                        rotation: Math.random() * Math.PI * 2,
+                        rotSpeed: (Math.random() - 0.5) * 0.3,
+                        life: 1.0,
+                        decay: 0.018 + Math.random() * 0.018,
+                        color: i % 2 === 0 ? '#fde68a' : '#f97316'
+                    });
+                }
+            }
+
+            // Shimmering brass/gold motes on clearing a pipe
+            spawnScoreBurst(x, y) {
+                const mult = this.getQualityMultiplier();
+                const count = Math.max(5, Math.round(16 * mult));
+
+                for (let i = 0; i < count; i++) {
+                    const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.3;
+                    const speed = 1.4 + Math.random() * 3.2;
+                    this.particles.push({
+                        type: 'spark',
+                        x,
+                        y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed - 1.0,
+                        gravity: 0.08,
+                        size: 2.2 + Math.random() * 2,
+                        life: 1.0,
+                        decay: 0.025 + Math.random() * 0.015,
+                        color: i % 2 === 0 ? '#fef08a' : '#38bdf8'
+                    });
+                }
+            }
+
+            // Steam vent hiss from pipe joints
+            spawnPipeSteam(x, y, dirX) {
+                if (Math.random() > this.getQualityMultiplier()) return;
+                this.particles.push({
+                    type: 'steam',
+                    x,
+                    y,
+                    vx: dirX * (1.5 + Math.random() * 1.5) - 2.0,
+                    vy: -0.4 - Math.random() * 0.6,
+                    size: 3 + Math.random() * 3,
+                    growRate: 0.25,
+                    life: 0.85,
+                    decay: 0.04,
+                    colorCore: 'rgba(241, 245, 249, 0.65)',
+                    colorOuter: 'rgba(148, 163, 184, 0.2)'
+                });
+            }
+
+            update(dtScale, width, height) {
+                // Update ambient floating dust/steam motes
+                for (let i = 0; i < this.ambientMotes.length; i++) {
+                    const m = this.ambientMotes[i];
+                    m.x += m.vx * dtScale;
+                    m.y += m.vy * dtScale;
+                    m.phase += 0.04 * dtScale;
+                    if (m.x < -10) m.x = width + 10;
+                    if (m.y < 0) m.y = height - 120;
+                    if (m.y > height - 115) m.y = 10;
+                }
+
+                // Update active particles
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    const p = this.particles[i];
+                    p.x += p.vx * dtScale;
+                    p.y += p.vy * dtScale;
+
+                    if (p.type === 'steam') {
+                        p.size += p.growRate * dtScale;
+                        p.vx *= Math.pow(0.96, dtScale);
+                        p.vy -= 0.02 * dtScale; // Steam gently rises
+                    } else {
+                        p.vy += (p.gravity || 0.2) * dtScale;
+                        if (p.rotation !== undefined) {
+                            p.rotation += p.rotSpeed * dtScale;
+                        }
+                    }
+
+                    p.life -= p.decay * dtScale;
+                    if (p.life <= 0) {
+                        this.particles.splice(i, 1);
+                    }
+                }
+            }
+
+            draw(ctx) {
+                // Draw ambient motes
+                ctx.save();
+                for (let i = 0; i < this.ambientMotes.length; i++) {
+                    const m = this.ambientMotes[i];
+                    const pulse = 0.7 + 0.3 * Math.sin(m.phase);
+                    ctx.fillStyle = `rgba(253, 230, 138, ${m.alpha * pulse})`;
+                    ctx.beginPath();
+                    ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // Draw active particles
+                for (let i = 0; i < this.particles.length; i++) {
+                    const p = this.particles[i];
+                    const alpha = Math.max(0, p.life);
+
+                    if (p.type === 'steam') {
+                        ctx.save();
+                        ctx.globalAlpha = alpha;
+                        const grad = ctx.createRadialGradient(p.x, p.y, 0.5, p.x, p.y, p.size);
+                        grad.addColorStop(0, p.colorCore);
+                        grad.addColorStop(0.6, p.colorOuter);
+                        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                        ctx.fillStyle = grad;
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.restore();
+                    } else if (p.type === 'spark') {
+                        ctx.save();
+                        ctx.globalAlpha = alpha;
+                        ctx.fillStyle = p.color;
+                        ctx.shadowColor = p.color;
+                        ctx.shadowBlur = 6;
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.restore();
+                    } else if (p.type === 'shard') {
+                        ctx.save();
+                        ctx.globalAlpha = alpha;
+                        ctx.translate(p.x, p.y);
+                        ctx.rotate(p.rotation);
+                        ctx.fillStyle = '#d97706';
+                        ctx.strokeStyle = '#fde68a';
+                        ctx.lineWidth = 1;
+                        ctx.fillRect(-p.size, -p.size * 0.6, p.size * 2, p.size * 1.2);
+                        ctx.strokeRect(-p.size, -p.size * 0.6, p.size * 2, p.size * 1.2);
+                        ctx.restore();
+                    }
+                }
+                ctx.restore();
+            }
+        }
+
+        // ----------------------------------------------------------------------------
+        // 4. PARALLAX STEAMPUNK ENVIRONMENT & ATMOSPHERIC CYCLE
+        // ----------------------------------------------------------------------------
+        const ATMOSPHERE_PALETTES = {
+            day: {
+                name: 'Daylight Shift',
+                skyTop: '#0c4a6e',
+                skyMid: '#0284c7',
+                skyBottom: '#bae6fd',
+                sunColor: '#fef08a',
+                sunGlow: 'rgba(254, 240, 138, 0.35)',
+                cloudColor: 'rgba(240, 249, 255, 0.75)',
+                farCity: '#1e3a5f',
+                midCity: '#0f2942',
+                nearFactory: '#091929',
+                windowGlow: '#fde047',
+                smogAlpha: 0.12
+            },
+            sunset: {
+                name: 'Furnace Dusk',
+                skyTop: '#31102f',
+                skyMid: '#9a3412',
+                skyBottom: '#fdba74',
+                sunColor: '#fb923c',
+                sunGlow: 'rgba(251, 146, 60, 0.45)',
+                cloudColor: 'rgba(254, 215, 170, 0.55)',
+                farCity: '#431407',
+                midCity: '#2a0a04',
+                nearFactory: '#180502',
+                windowGlow: '#fb923c',
+                smogAlpha: 0.22
+            },
+            night: {
+                name: 'Starlit Aether',
+                skyTop: '#020617',
+                skyMid: '#0f172a',
+                skyBottom: '#1e293b',
+                sunColor: '#e2e8f0',
+                sunGlow: 'rgba(148, 163, 184, 0.25)',
+                cloudColor: 'rgba(51, 65, 85, 0.5)',
+                farCity: '#0f172a',
+                midCity: '#090d16',
+                nearFactory: '#030712',
+                windowGlow: '#38bdf8',
+                smogAlpha: 0.16
+            }
+        };
+
+        class ParallaxBackground {
+            constructor() {
+                this.scrollFar = 0;
+                this.scrollMid = 0;
+                this.scrollNear = 0;
+                this.scrollGround = 0;
+                this.gearRotation = 0;
+                this.airships = [
+                    { x: 120, y: 95, scale: 0.75, speed: 0.22 },
+                    { x: 380, y: 155, scale: 0.5, speed: 0.14 }
+                ];
+                this.clouds = [
+                    { x: 40, y: 80, w: 95, h: 28, speed: 0.18 },
+                    { x: 210, y: 125, w: 120, h: 34, speed: 0.24 },
+                    { x: 390, y: 68, w: 85, h: 24, speed: 0.15 }
+                ];
+                this.stars = [];
+                for (let i = 0; i < 45; i++) {
+                    this.stars.push({
+                        x: Math.random() * 540,
+                        y: Math.random() * 340,
+                        r: 0.6 + Math.random() * 1.4,
+                        twinkle: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+
+            getAtmosphereKey(score, settingMode) {
+                if (settingMode && settingMode !== 'dynamic') {
+                    return settingMode;
+                }
+                const phase = Math.floor(score / 15) % 3;
+                if (phase === 0) return 'day';
+                if (phase === 1) return 'sunset';
+                return 'night';
+            }
+
+            update(dtScale, groundSpeed, width, isMoving) {
+                this.gearRotation += 0.008 * dtScale;
+
+                // Clouds and dirigibles always drift gently
+                this.clouds.forEach(c => {
+                    c.x -= c.speed * dtScale;
+                    if (c.x + c.w < -40) c.x = width + 50;
+                });
+
+                this.airships.forEach(a => {
+                    a.x -= a.speed * dtScale;
+                    if (a.x < -120) a.x = width + 100;
+                });
+
+                this.stars.forEach(s => {
+                    s.twinkle += 0.05 * dtScale;
+                });
+
+                if (isMoving) {
+                    this.scrollFar = (this.scrollFar + groundSpeed * 0.14 * dtScale) % 320;
+                    this.scrollMid = (this.scrollMid + groundSpeed * 0.32 * dtScale) % 260;
+                    this.scrollNear = (this.scrollNear + groundSpeed * 0.58 * dtScale) % 220;
+                    this.scrollGround = (this.scrollGround + groundSpeed * dtScale) % 48;
+                }
+            }
+
+            drawSkyAndCelestial(ctx, width, height, groundY, pal, atmoKey) {
+                // 1. Sky Gradient
+                const skyGrad = ctx.createLinearGradient(0, 0, 0, groundY);
+                skyGrad.addColorStop(0, pal.skyTop);
+                skyGrad.addColorStop(0.55, pal.skyMid);
+                skyGrad.addColorStop(1, pal.skyBottom);
+                ctx.fillStyle = skyGrad;
+                ctx.fillRect(0, 0, width, groundY);
+
+                // 2. Twinkling Stars (Visible in night and faint in sunset)
+                if (atmoKey === 'night' || atmoKey === 'sunset') {
+                    const baseAlpha = atmoKey === 'night' ? 0.85 : 0.25;
+                    ctx.save();
+                    this.stars.forEach(s => {
+                        const alpha = baseAlpha * (0.5 + 0.5 * Math.sin(s.twinkle));
+                        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                        ctx.beginPath();
+                        ctx.arc(s.x % width, s.y, s.r, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+                    ctx.restore();
+                }
+
+                // 3. Clockwork Sun / Moon Disc with Rotating Astrolabe Ring
+                const sunX = width * 0.76;
+                const sunY = groundY * 0.24;
+                ctx.save();
+                const glowGrad = ctx.createRadialGradient(sunX, sunY, 10, sunX, sunY, 85);
+                glowGrad.addColorStop(0, pal.sunGlow);
+                glowGrad.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = glowGrad;
+                ctx.beginPath();
+                ctx.arc(sunX, sunY, 85, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Rotating Astrolabe Outer Ring
+                ctx.translate(sunX, sunY);
+                ctx.rotate(this.gearRotation * 0.6);
+                ctx.strokeStyle = 'rgba(253, 230, 138, 0.28)';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.arc(0, 0, 44, 0, Math.PI * 2);
+                ctx.stroke();
+                for (let i = 0; i < 12; i++) {
+                    const a = (i * Math.PI) / 6;
+                    ctx.beginPath();
+                    ctx.moveTo(Math.cos(a) * 38, Math.sin(a) * 38);
+                    ctx.lineTo(Math.cos(a) * 48, Math.sin(a) * 48);
+                    ctx.stroke();
+                }
+
+                // Core Celestial Sphere
+                ctx.fillStyle = pal.sunColor;
+                ctx.beginPath();
+                ctx.arc(0, 0, 30, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                // 4. Clouds
+                ctx.save();
+                ctx.fillStyle = pal.cloudColor;
+                this.clouds.forEach(c => {
+                    ctx.beginPath();
+                    ctx.roundRect(c.x, c.y, c.w, c.h, c.h * 0.5);
+                    ctx.arc(c.x + c.w * 0.3, c.y, c.h * 0.55, 0, Math.PI * 2);
+                    ctx.arc(c.x + c.w * 0.65, c.y - 2, c.h * 0.65, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                ctx.restore();
+
+                // 5. Distant Steampunk Airships / Dirigibles
+                this.airships.forEach(a => {
+                    this.drawAirship(ctx, a.x, a.y, a.scale, pal);
+                });
+            }
+
+            drawAirship(ctx, x, y, scale, pal) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.scale(scale, scale);
+
+                // Envelope balloon
+                ctx.fillStyle = pal.midCity;
+                ctx.strokeStyle = '#d97706';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 42, 16, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // Brass vertical ribs on balloon
+                ctx.beginPath();
+                ctx.moveTo(-14, -15);
+                ctx.lineTo(-14, 15);
+                ctx.moveTo(14, -15);
+                ctx.lineTo(14, 15);
+                ctx.stroke();
+
+                // Tail fins
+                ctx.fillStyle = '#b45309';
+                ctx.beginPath();
+                ctx.moveTo(32, -8);
+                ctx.lineTo(48, -16);
+                ctx.lineTo(44, 0);
+                ctx.lineTo(48, 16);
+                ctx.lineTo(32, 8);
+                ctx.closePath();
+                ctx.fill();
+
+                // Gondola cabin underneath
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(-15, 19, 30, 8);
+                ctx.fillStyle = pal.windowGlow;
+                ctx.fillRect(-10, 21, 4, 4);
+                ctx.fillRect(-2, 21, 4, 4);
+                ctx.fillRect(6, 21, 4, 4);
+
+                ctx.restore();
+            }
+
+            drawGearSilhouette(ctx, x, y, radius, teeth, angle, color) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(angle);
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                const outerR = radius;
+                const innerR = radius * 0.84;
+                for (let i = 0; i < teeth * 2; i++) {
+                    const r = i % 2 === 0 ? outerR : innerR;
+                    const a = (i * Math.PI) / teeth;
+                    const gx = Math.cos(a) * r;
+                    const gy = Math.sin(a) * r;
+                    if (i === 0) ctx.moveTo(gx, gy);
+                    else ctx.lineTo(gx, gy);
+                }
+                ctx.closePath();
+                ctx.fill();
+
+                // Inner cutout
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(0, 0, radius * 0.35, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            drawIndustrialLayers(ctx, width, groundY, pal) {
+                // Layer 1: Distant Clockwork Skyline & Smokestacks
+                ctx.save();
+                ctx.fillStyle = pal.farCity;
+                const farStep = 160;
+                for (let x = -this.scrollFar; x < width + farStep; x += farStep) {
+                    // Cathedral spire & factory blocks
+                    ctx.fillRect(x, groundY - 190, 55, 190);
+                    ctx.fillRect(x + 60, groundY - 140, 48, 140);
+                    ctx.fillRect(x + 112, groundY - 220, 36, 220);
+                    // Spire roof
+                    ctx.beginPath();
+                    ctx.moveTo(x + 112, groundY - 220);
+                    ctx.lineTo(x + 130, groundY - 265);
+                    ctx.lineTo(x + 148, groundY - 220);
+                    ctx.fill();
+                }
+                ctx.restore();
+
+                // Layer 2: Midground Rotating Colossal Gears & Aqueducts
+                ctx.save();
+                const midStep = 260;
+                for (let x = -this.scrollMid; x < width + midStep; x += midStep) {
+                    this.drawGearSilhouette(ctx, x + 70, groundY - 95, 58, 14, this.gearRotation, pal.midCity);
+                    this.drawGearSilhouette(ctx, x + 165, groundY - 70, 42, 10, -this.gearRotation * 1.4, pal.midCity);
+
+                    ctx.fillStyle = pal.midCity;
+                    ctx.fillRect(x, groundY - 85, 260, 85);
+                }
+                ctx.restore();
+
+                // Layer 3: Near Factory Silhouettes with Glowing Furnace Windows
+                ctx.save();
+                const nearStep = 220;
+                for (let x = -this.scrollNear; x < width + nearStep; x += nearStep) {
+                    ctx.fillStyle = pal.nearFactory;
+                    ctx.fillRect(x + 10, groundY - 115, 75, 115);
+                    ctx.fillRect(x + 95, groundY - 75, 65, 75);
+                    ctx.fillRect(x + 170, groundY - 135, 40, 135);
+
+                    // Glowing industrial windows
+                    ctx.fillStyle = pal.windowGlow;
+                    ctx.globalAlpha = 0.75;
+                    for (let wy = groundY - 95; wy < groundY - 30; wy += 22) {
+                        ctx.fillRect(x + 24, wy, 10, 12);
+                        ctx.fillRect(x + 42, wy, 10, 12);
+                        ctx.fillRect(x + 60, wy, 10, 12);
+                    }
+                    ctx.fillRect(x + 184, groundY - 115, 12, 24);
+                    ctx.globalAlpha = 1.0;
+                }
+                ctx.restore();
+            }
+
+            drawForegroundTrack(ctx, width, height, groundY) {
+                const groundHeight = height - groundY;
+
+                // 1. Top Brass Rail Beam
+                const railGrad = ctx.createLinearGradient(0, groundY, 0, groundY + 22);
+                railGrad.addColorStop(0, '#fde68a');
+                railGrad.addColorStop(0.35, '#d97706');
+                railGrad.addColorStop(0.8, '#78350f');
+                railGrad.addColorStop(1, '#451a03');
+                ctx.fillStyle = railGrad;
+                ctx.fillRect(0, groundY, width, 22);
+
+                // Scrolling diagonal hazard/brass stripes & rivets along the top rail
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(0, groundY + 3, width, 16);
+                ctx.clip();
+
+                const stripeStep = 48;
+                for (let x = -this.scrollGround - stripeStep; x < width + stripeStep; x += stripeStep) {
+                    // Angled copper plate
+                    ctx.fillStyle = 'rgba(69, 26, 3, 0.55)';
+                    ctx.beginPath();
+                    ctx.moveTo(x, groundY + 3);
+                    ctx.lineTo(x + 20, groundY + 3);
+                    ctx.lineTo(x + 10, groundY + 19);
+                    ctx.lineTo(x - 10, groundY + 19);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // Glowing rivet
+                    ctx.fillStyle = '#fef3c7';
+                    ctx.beginPath();
+                    ctx.arc(x + 28, groundY + 11, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+
+                // 2. Lower Dark Iron Substructure & Cog-Track
+                const subGrad = ctx.createLinearGradient(0, groundY + 22, 0, height);
+                subGrad.addColorStop(0, '#1e293b');
+                subGrad.addColorStop(0.3, '#0f172a');
+                subGrad.addColorStop(1, '#020617');
+                ctx.fillStyle = subGrad;
+                ctx.fillRect(0, groundY + 22, width, groundHeight - 22);
+
+                // Scrolling steel girders & piston arches in the ground
+                const girderStep = 48;
+                for (let x = -this.scrollGround; x < width + girderStep; x += girderStep) {
+                    ctx.strokeStyle = '#334155';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(x, groundY + 24);
+                    ctx.lineTo(x + 24, height);
+                    ctx.moveTo(x + 24, groundY + 24);
+                    ctx.lineTo(x, height);
+                    ctx.stroke();
+
+                    // Vertical pillar
+                    ctx.fillStyle = '#0f172a';
+                    ctx.fillRect(x - 3, groundY + 22, 6, groundHeight - 22);
+                }
+
+                // Crisp top border highlight
+                ctx.strokeStyle = '#fef08a';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(0, groundY + 1);
+                ctx.lineTo(width, groundY + 1);
+                ctx.stroke();
+            }
+        }
+
+        // ----------------------------------------------------------------------------
+        // 5. BOLT THE BRASS-WING (PLAYER CHARACTER & 1:1 PHYSICS)
+        // ----------------------------------------------------------------------------
+        class BoltAvian {
+            constructor() {
+                // Exact 1:1 Tuned Flappy Bird Physics Constants (at 60Hz baseline)
+                this.gravity = 0.46;
+                this.jumpVelocity = -8.15;
+                this.terminalVelocity = 11.5;
+                this.collisionRadius = 13.5; // Forgiving circular hitbox inside 36x28 visual hull
+
+                this.reset(120, 260);
+            }
+
+            reset(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vy = 0;
+                this.rotation = 0; // In radians
+                this.wingAngle = 0;
+                this.wingSpeed = 0.18;
+                this.gearAngle = 0;
+                this.tailSpread = 0;
+                this.beakOpen = 0;
+                this.blinkTimer = 120;
+                this.isBlinking = false;
+                this.isDead = false;
+                this.hoverPhase = 0;
+            }
+
+            flap() {
+                if (this.isDead) return;
+                this.vy = this.jumpVelocity;
+                // Snap nose upward to -25 degrees (-0.436 rad)
+                this.rotation = -0.436;
+                this.wingSpeed = 0.48;
+                this.tailSpread = 1.0;
+                this.beakOpen = 1.0;
+            }
+
+            updateHover(dtScale, baseY) {
+                this.hoverPhase += 0.075 * dtScale;
+                this.y = baseY + Math.sin(this.hoverPhase) * 8;
+                this.rotation = Math.sin(this.hoverPhase * 0.5) * 0.06;
+                this.wingAngle += 0.22 * dtScale;
+                this.gearAngle += 0.12 * dtScale;
+                this.updateBlink(dtScale);
+            }
+
+            updatePhysics(dtScale, groundY) {
+                // Apply gravity
+                this.vy += this.gravity * dtScale;
+                if (this.vy > this.terminalVelocity) {
+                    this.vy = this.terminalVelocity;
+                }
+                this.y += this.vy * dtScale;
+
+                // Authentic Flappy Bird Pitch Rotation:
+                // Hold upward pitch while ascending or just past apex, then nose-dive toward +90 deg (Math.PI / 2)
+                if (this.vy < 1.8) {
+                    this.rotation = Math.max(-0.44, this.rotation - 0.15 * dtScale);
+                } else {
+                    const targetNoseDive = Math.min(Math.PI / 2, ((this.vy - 1.8) / (this.terminalVelocity - 1.8)) * (Math.PI / 2));
+                    this.rotation += (targetNoseDive - this.rotation) * 0.18 * dtScale;
+                }
+
+                // Mechanical animations decay smoothly
+                this.wingSpeed = Math.max(0.14, this.wingSpeed * Math.pow(0.95, dtScale));
+                if (!this.isDead) {
+                    this.wingAngle += this.wingSpeed * dtScale;
+                    this.gearAngle += (0.14 + Math.max(0, -this.vy * 0.03)) * dtScale;
+                }
+                this.tailSpread *= Math.pow(0.9, dtScale);
+                this.beakOpen *= Math.pow(0.88, dtScale);
+
+                // Clamp to ground
+                if (this.y + this.collisionRadius >= groundY) {
+                    this.y = groundY - this.collisionRadius;
+                }
+
+                this.updateBlink(dtScale);
+            }
+
+            updateBlink(dtScale) {
+                this.blinkTimer -= dtScale;
+                if (this.blinkTimer <= 0) {
+                    if (this.isBlinking) {
+                        this.isBlinking = false;
+                        this.blinkTimer = 110 + Math.random() * 140;
+                    } else {
+                        this.isBlinking = true;
+                        this.blinkTimer = 8;
+                    }
+                }
+            }
+
+            draw(ctx, skin, showHitbox = false) {
+                const c = skin.colors;
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+
+                // 1. Rear Exhaust Nozzle Pipe
+                ctx.fillStyle = c.bodyDark;
+                ctx.strokeStyle = c.trim;
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.moveTo(-14, 1);
+                ctx.lineTo(-23, -3);
+                ctx.lineTo(-23, 6);
+                ctx.lineTo(-14, 5);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // 2. Articulated Mechanical Tail Feathers (3 copper blades that fan on flap)
+                const spread = 0.18 + this.tailSpread * 0.25;
+                for (let i = -1; i <= 1; i++) {
+                    ctx.save();
+                    ctx.translate(-14, -2);
+                    ctx.rotate(i * spread - 0.15);
+                    ctx.fillStyle = i === 0 ? c.wingLight : c.wingDark;
+                    ctx.strokeStyle = c.bodyDark;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.lineTo(-13, -3);
+                    ctx.lineTo(-16, 0);
+                    ctx.lineTo(-12, 3);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.restore();
+                }
+
+                // 3. Main Brass Fuselage (Streamlined Avian Hull)
+                const hullGrad = ctx.createRadialGradient(-4, -6, 2, 0, 0, 20);
+                hullGrad.addColorStop(0, c.bodyLight);
+                hullGrad.addColorStop(0.55, c.bodyMid);
+                hullGrad.addColorStop(1, c.bodyDark);
+
+                ctx.fillStyle = hullGrad;
+                ctx.strokeStyle = c.bodyDark;
+                ctx.lineWidth = 1.8;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 18.5, 14.5, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // Fuselage Seam & Rivets
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.35)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(0, 0, 14, 0.3, Math.PI - 0.3);
+                ctx.stroke();
+
+                ctx.fillStyle = c.trim;
+                const rivetAngles = [0.6, 1.2, 1.9, 2.5];
+                rivetAngles.forEach(ra => {
+                    ctx.beginPath();
+                    ctx.arc(Math.cos(ra) * 14, Math.sin(ra) * 11, 1.2, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                // 4. Internal Glass Chamber & Spinning Clockwork Gear
+                ctx.save();
+                ctx.fillStyle = '#090d16';
+                ctx.strokeStyle = c.trim;
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.arc(-3, 2, 6.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.clip();
+                ctx.translate(-3, 2);
+                ctx.rotate(this.gearAngle);
+                ctx.fillStyle = c.gearColor;
+                for (let t = 0; t < 8; t++) {
+                    ctx.rotate(Math.PI / 4);
+                    ctx.fillRect(-1.2, -5.5, 2.4, 11);
+                }
+                ctx.fillStyle = '#090d16';
+                ctx.beginPath();
+                ctx.arc(0, 0, 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                // 5. Head Crest / Aether Antenna
+                ctx.strokeStyle = c.bodyDark;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(2, -13);
+                ctx.quadraticCurveTo(-4, -21, -9, -19);
+                ctx.stroke();
+                ctx.fillStyle = c.lensGlow;
+                ctx.beginPath();
+                ctx.arc(-9, -19, 2.2, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 6. Articulated Brass Beak (Upper & Lower Mandibles)
+                const jawOpen = this.beakOpen * 0.22;
+                // Upper Beak
+                ctx.save();
+                ctx.translate(15, -2);
+                ctx.rotate(-jawOpen * 0.5);
+                ctx.fillStyle = c.beakLight;
+                ctx.strokeStyle = c.bodyDark;
+                ctx.lineWidth = 1.4;
+                ctx.beginPath();
+                ctx.moveTo(0, -4);
+                ctx.lineTo(13, 0);
+                ctx.lineTo(0, 2);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                ctx.restore();
+
+                // Lower Beak
+                ctx.save();
+                ctx.translate(14, 2);
+                ctx.rotate(jawOpen);
+                ctx.fillStyle = c.beakDark;
+                ctx.strokeStyle = c.bodyDark;
+                ctx.lineWidth = 1.4;
+                ctx.beginPath();
+                ctx.moveTo(0, -1);
+                ctx.lineTo(10, 1);
+                ctx.lineTo(0, 4);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                ctx.restore();
+
+                // 7. Aviator Goggles & Glowing Optical Lens
+                ctx.save();
+                ctx.translate(8, -4);
+                // Goggle Strap
+                ctx.strokeStyle = c.goggleRim;
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.moveTo(-22, 0);
+                ctx.lineTo(-4, 0);
+                ctx.stroke();
+
+                // Brass Goggle Bezel
+                ctx.fillStyle = c.goggleRim;
+                ctx.strokeStyle = c.trim;
+                ctx.lineWidth = 1.4;
+                ctx.beginPath();
+                ctx.arc(0, 0, 6.2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // Glowing Lens
+                ctx.fillStyle = c.lensGlow;
+                ctx.beginPath();
+                ctx.arc(0.5, 0, 4.4, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Eye State (Damaged X on death, closed line on blink, or focused pupil + specular shine)
+                if (this.isDead) {
+                    ctx.strokeStyle = '#090d16';
+                    ctx.lineWidth = 1.8;
+                    ctx.beginPath();
+                    ctx.moveTo(-2, -2);
+                    ctx.lineTo(3, 2);
+                    ctx.moveTo(3, -2);
+                    ctx.lineTo(-2, 2);
+                    ctx.stroke();
+                } else if (this.isBlinking) {
+                    ctx.strokeStyle = '#090d16';
+                    ctx.lineWidth = 1.8;
+                    ctx.beginPath();
+                    ctx.moveTo(-3, 0);
+                    ctx.lineTo(4, 0);
+                    ctx.stroke();
+                } else {
+                    // Pupil
+                    ctx.fillStyle = '#090d16';
+                    ctx.beginPath();
+                    ctx.arc(1.5, 0, 2.0, 0, Math.PI * 2);
+                    ctx.fill();
+                    // Lens Glint
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(-1, -1.8, 1.3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+
+                // 8. Foreground Articulated Mechanical Wing
+                const flapOffset = Math.sin(this.wingAngle);
+                ctx.save();
+                ctx.translate(-3, 1);
+                ctx.rotate(flapOffset * 0.55);
+
+                // Wing Primary Strut & Feathers
+                const wingGrad = ctx.createLinearGradient(0, -8, 0, 10);
+                wingGrad.addColorStop(0, c.wingLight);
+                wingGrad.addColorStop(1, c.wingDark);
+
+                ctx.fillStyle = wingGrad;
+                ctx.strokeStyle = c.bodyDark;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(4, -2);
+                ctx.quadraticCurveTo(-8, -12, -15, -2);
+                ctx.quadraticCurveTo(-12, 9, -2, 8);
+                ctx.quadraticCurveTo(5, 6, 4, -2);
+                ctx.fill();
+                ctx.stroke();
+
+                // Feather Plate Divisions
+                ctx.strokeStyle = c.trim;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(-2, 0);
+                ctx.lineTo(-12, 1);
+                ctx.moveTo(-1, 3);
+                ctx.lineTo(-9, 5);
+                ctx.stroke();
+
+                // Shoulder Pivot Bolt
+                ctx.fillStyle = c.trim;
+                ctx.beginPath();
+                ctx.arc(1, 1, 2.4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                ctx.restore();
+
+                // 9. Optional Hitbox & Velocity Vector Inspector Overlay
+                if (showHitbox) {
+                    ctx.save();
+                    // Collision Circle
+                    ctx.strokeStyle = '#22d3ee';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([4, 2]);
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.collisionRadius, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+
+                    // Center Crosshair
+                    ctx.fillStyle = '#f43f5e';
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Velocity Vector Line
+                    ctx.strokeStyle = '#fbbf24';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y);
+                    ctx.lineTo(this.x + 22, this.y + this.vy * 4);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            }
+        }
+
+        // ----------------------------------------------------------------------------
+        // 6. INDUSTRIAL BRASS PIPES (OBSTACLES WITH GAUGES, VALVES & STEAM VENTS)
+        // ----------------------------------------------------------------------------
+        class PipeManager {
+            constructor() {
+                this.pipes = [];
+                this.pipeWidth = 64;
+                this.pipeGap = 128; // Authentic balanced 1:1 gap height
+                this.spawnInterval = 92; // Frames between pipes at 60Hz
+                this.scrollSpeed = 2.85; // 1:1 horizontal speed
+                this.spawnTimer = 0;
+            }
+
+            reset() {
+                this.pipes = [];
+                this.spawnTimer = 60;
+            }
+
+            spawnPipe(canvasWidth, groundY) {
+                const minTop = 68;
+                const maxTop = groundY - this.pipeGap - 88;
+                const gapTop = minTop + Math.random() * Math.max(40, maxTop - minTop);
+
+                this.pipes.push({
+                    x: canvasWidth + 20,
+                    gapTop: gapTop,
+                    gapBottom: gapTop + this.pipeGap,
+                    passed: false,
+                    scoreGlow: 0,
+                    valveAngle: Math.random() * Math.PI * 2,
+                    valveDir: Math.random() > 0.5 ? 1 : -1,
+                    hasGauge: Math.random() > 0.3,
+                    steamTimer: Math.random() * 40
+                });
+            }
+
+            update(dtScale, canvasWidth, groundY, particleSystem) {
+                this.spawnTimer += dtScale;
+                if (this.spawnTimer >= this.spawnInterval) {
+                    this.spawnTimer -= this.spawnInterval;
+                    this.spawnPipe(canvasWidth, groundY);
+                }
+
+                for (let i = this.pipes.length - 1; i >= 0; i--) {
+                    const p = this.pipes[i];
+                    p.x -= this.scrollSpeed * dtScale;
+                    p.valveAngle += 0.03 * p.valveDir * dtScale;
+                    if (p.scoreGlow > 0) {
+                        p.scoreGlow = Math.max(0, p.scoreGlow - 0.04 * dtScale);
+                    }
+
+                    // Periodic steam vent emission near pipe lips
+                    p.steamTimer -= dtScale;
+                    if (p.steamTimer <= 0) {
+                        p.steamTimer = 28 + Math.random() * 45;
+                        if (p.x > 40 && p.x < canvasWidth - 20) {
+                            const ventY = Math.random() > 0.5 ? p.gapTop - 14 : p.gapBottom + 14;
+                            particleSystem.spawnPipeSteam(p.x, ventY, -1);
+                        }
+                    }
+
+                    if (p.x + this.pipeWidth < -30) {
+                        this.pipes.splice(i, 1);
+                    }
+                }
+            }
+
+            checkCollisionAndScore(bolt, onScore) {
+                const r = bolt.collisionRadius;
+                for (let i = 0; i < this.pipes.length; i++) {
+                    const p = this.pipes[i];
+
+                    // Check Score Trigger (when Bolt passes horizontal center of pipe)
+                    if (!p.passed && bolt.x > p.x + this.pipeWidth * 0.5) {
+                        p.passed = true;
+                        p.scoreGlow = 1.0;
+                        onScore(p.x + this.pipeWidth * 0.5, (p.gapTop + p.gapBottom) * 0.5);
+                    }
+
+                    // Broadphase X overlap
+                    if (bolt.x + r > p.x && bolt.x - r < p.x + this.pipeWidth) {
+                        // Circle vs Top Pipe AABB & Bottom Pipe AABB
+                        const closestX = Math.max(p.x, Math.min(bolt.x, p.x + this.pipeWidth));
+
+                        // Top pipe rectangle: [p.x, -100] to [p.x + pipeWidth, p.gapTop]
+                        const closestTopY = Math.max(-100, Math.min(bolt.y, p.gapTop));
+                        const dxTop = bolt.x - closestX;
+                        const dyTop = bolt.y - closestTopY;
+                        if (dxTop * dxTop + dyTop * dyTop < r * r) {
+                            return true;
+                        }
+
+                        // Bottom pipe rectangle: [p.x, p.gapBottom] to [p.x + pipeWidth, 2000]
+                        const closestBotY = Math.max(p.gapBottom, Math.min(bolt.y, 2000));
+                        const dxBot = bolt.x - closestX;
+                        const dyBot = bolt.y - closestBotY;
+                        if (dxBot * dxBot + dyBot * dyBot < r * r) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+            drawColumn(ctx, x, y, w, h, isTop, pipe) {
+                if (h <= 0) return;
+
+                // Metallic Cylindrical Brass/Copper Gradient
+                const bodyGrad = ctx.createLinearGradient(x, 0, x + w, 0);
+                bodyGrad.addColorStop(0, '#451a03');
+                bodyGrad.addColorStop(0.18, '#b45309');
+                bodyGrad.addColorStop(0.35, '#fde68a');
+                bodyGrad.addColorStop(0.55, '#d97706');
+                bodyGrad.addColorStop(0.85, '#78350f');
+                bodyGrad.addColorStop(1, '#290f02');
+
+                ctx.fillStyle = bodyGrad;
+                ctx.strokeStyle = '#290f02';
+                ctx.lineWidth = 2;
+                ctx.fillRect(x, y, w, h);
+                ctx.strokeRect(x, y, w, h);
+
+                // Horizontal Riveted Pipe Rings every 75px
+                ctx.fillStyle = 'rgba(69, 26, 3, 0.55)';
+                const startY = isTop ? y + h - 65 : y + 55;
+                const step = isTop ? -75 : 75;
+                for (let ry = startY; isTop ? ry > y + 10 : ry < y + h - 10; ry += step) {
+                    ctx.fillRect(x + 2, ry, w - 4, 6);
+                    ctx.fillStyle = '#fef3c7';
+                    for (let rx = x + 10; rx < x + w - 6; rx += 14) {
+                        ctx.beginPath();
+                        ctx.arc(rx, ry + 3, 1.5, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    ctx.fillStyle = 'rgba(69, 26, 3, 0.55)';
+                }
+
+                // Heavy Bolted Lip Flange at Gap Opening
+                const lipW = w + 10;
+                const lipH = 26;
+                const lipX = x - 5;
+                const lipY = isTop ? y + h - lipH : y;
+
+                const lipGrad = ctx.createLinearGradient(lipX, 0, lipX + lipW, 0);
+                lipGrad.addColorStop(0, '#451a03');
+                lipGrad.addColorStop(0.2, '#d97706');
+                lipGrad.addColorStop(0.38, '#fef08a');
+                lipGrad.addColorStop(0.65, '#b45309');
+                lipGrad.addColorStop(1, '#290f02');
+
+                ctx.fillStyle = lipGrad;
+                ctx.strokeStyle = '#290f02';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.roundRect(lipX, lipY, lipW, lipH, 4);
+                ctx.fill();
+                ctx.stroke();
+
+                // Glow Trim When Cleared
+                if (pipe.scoreGlow > 0) {
+                    ctx.save();
+                    ctx.strokeStyle = `rgba(254, 240, 138, ${pipe.scoreGlow})`;
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(lipX, lipY, lipW, lipH);
+                    ctx.restore();
+                }
+
+                // Flange Bolts
+                ctx.fillStyle = '#fef3c7';
+                for (let bx = lipX + 8; bx <= lipX + lipW - 8; bx += 14) {
+                    ctx.beginPath();
+                    ctx.arc(bx, lipY + 7, 2, 0, Math.PI * 2);
+                    ctx.arc(bx, lipY + lipH - 7, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // Decorative Spinning Valve Wheel or Pressure Gauge on Pipe Body
+                if (h > 95) {
+                    const detailY = isTop ? y + h - 62 : y + 62;
+                    const centerX = x + w * 0.5;
+
+                    if (pipe.hasGauge && isTop) {
+                        // Analog Pressure Gauge
+                        ctx.save();
+                        ctx.translate(centerX, detailY);
+                        ctx.fillStyle = '#0f172a';
+                        ctx.strokeStyle = '#fde68a';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.arc(0, 0, 12, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.stroke();
+
+                        // Dial face
+                        ctx.fillStyle = '#fef3c7';
+                        ctx.beginPath();
+                        ctx.arc(0, 0, 9.5, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        // Red danger zone arc
+                        ctx.strokeStyle = '#ef4444';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.arc(0, 0, 7, -0.6, 0.6);
+                        ctx.stroke();
+
+                        // Oscillating Needle
+                        ctx.rotate(Math.sin(pipe.valveAngle * 3) * 1.1);
+                        ctx.strokeStyle = '#0f172a';
+                        ctx.lineWidth = 1.6;
+                        ctx.beginPath();
+                        ctx.moveTo(-2, 0);
+                        ctx.lineTo(7.5, 0);
+                        ctx.stroke();
+                        ctx.restore();
+                    } else if (!isTop) {
+                        // Rotating Red/Brass Steam Valve Wheel
+                        ctx.save();
+                        ctx.translate(centerX, detailY);
+                        ctx.rotate(pipe.valveAngle);
+                        ctx.strokeStyle = '#dc2626';
+                        ctx.lineWidth = 2.5;
+                        ctx.beginPath();
+                        ctx.arc(0, 0, 11, 0, Math.PI * 2);
+                        ctx.stroke();
+
+                        for (let s = 0; s < 4; s++) {
+                            ctx.rotate(Math.PI / 4);
+                            ctx.beginPath();
+                            ctx.moveTo(-11, 0);
+                            ctx.lineTo(11, 0);
+                            ctx.stroke();
+                        }
+                        ctx.fillStyle = '#fde68a';
+                        ctx.beginPath();
+                        ctx.arc(0, 0, 3.5, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.restore();
+                    }
+                }
+            }
+
+            draw(ctx, groundY, showHitbox = false) {
+                for (let i = 0; i < this.pipes.length; i++) {
+                    const p = this.pipes[i];
+                    // Top Pipe
+                    this.drawColumn(ctx, p.x, 0, this.pipeWidth, p.gapTop, true, p);
+                    // Bottom Pipe
+                    this.drawColumn(ctx, p.x, p.gapBottom, this.pipeWidth, groundY - p.gapBottom, false, p);
+
+                    if (showHitbox) {
+                        ctx.save();
+                        ctx.strokeStyle = '#f43f5e';
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(p.x, 0, this.pipeWidth, p.gapTop);
+                        ctx.strokeRect(p.x, p.gapBottom, this.pipeWidth, groundY - p.gapBottom);
+
+                        // Safe Gap Center Guide
+                        ctx.strokeStyle = 'rgba(16, 185, 129, 0.6)';
+                        ctx.setLineDash([4, 4]);
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, (p.gapTop + p.gapBottom) * 0.5);
+                        ctx.lineTo(p.x + this.pipeWidth, (p.gapTop + p.gapBottom) * 0.5);
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+                }
+            }
+        }
+
+        // ----------------------------------------------------------------------------
+        // 7. VECTOR MEDAL RENDERER (FOR GAME OVER SCOREBOARD)
+        // ----------------------------------------------------------------------------
+        class MedalRenderer {
+            static getMedalTier(score) {
+                if (score >= 80) {
+                    return {
+                        id: 'platinum',
+                        name: 'Platinum Aether',
+                        rimLight: '#e0f2fe',
+                        rimMid: '#38bdf8',
+                        rimDark: '#0369a1',
+                        core: '#0284c7',
+                        star: '#ffffff'
+                    };
+                }
+                if (score >= 40) {
+                    return {
+                        id: 'gold',
+                        name: 'Golden Chrono',
+                        rimLight: '#fef08a',
+                        rimMid: '#eab308',
+                        rimDark: '#854d0e',
+                        core: '#ca8a04',
+                        star: '#fef9c3'
+                    };
+                }
+                if (score >= 20) {
+                    return {
+                        id: 'silver',
+                        name: 'Silver Turbine',
+                        rimLight: '#f8fafc',
+                        rimMid: '#94a3b8',
+                        rimDark: '#334155',
+                        core: '#475569',
+                        star: '#f1f5f9'
+                    };
+                }
+                if (score >= 10) {
+                    return {
+                        id: 'bronze',
+                        name: 'Bronze Cog',
+                        rimLight: '#fed7aa',
+                        rimMid: '#d97706',
+                        rimDark: '#7c2d12',
+                        core: '#9a3412',
+                        star: '#ffedd5'
+                    };
+                }
+                return null;
+            }
+
+            static render(canvas, score, animTime) {
+                const ctx = canvas.getContext('2d');
+                const w = canvas.width;
+                const h = canvas.height;
+                ctx.clearRect(0, 0, w, h);
+
+                const tier = MedalRenderer.getMedalTier(score);
+                const cx = w / 2;
+                const cy = h / 2;
+
+                if (!tier) {
+                    // Draw empty recessed socket
+                    ctx.save();
+                    ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([4, 4]);
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, 30, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.restore();
+                    return;
+                }
+
+                ctx.save();
+                ctx.translate(cx, cy);
+
+                // 1. Crimson / Royal Ribbon at Top
+                ctx.fillStyle = '#991b1b';
+                ctx.strokeStyle = '#fde68a';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(-16, -38);
+                ctx.lineTo(16, -38);
+                ctx.lineTo(12, -16);
+                ctx.lineTo(-12, -16);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // 2. Outer Gear Teeth Rim
+                ctx.save();
+                ctx.rotate(animTime * 0.01);
+                ctx.fillStyle = tier.rimDark;
+                const teeth = 12;
+                for (let i = 0; i < teeth; i++) {
+                    ctx.rotate((Math.PI * 2) / teeth);
+                    ctx.fillRect(-4, -33, 8, 66);
+                }
+                ctx.restore();
+
+                // 3. Main Metallic Medallion Disc
+                const grad = ctx.createLinearGradient(-26, -26, 26, 26);
+                grad.addColorStop(0, tier.rimLight);
+                grad.addColorStop(0.5, tier.rimMid);
+                grad.addColorStop(1, tier.rimDark);
+
+                ctx.fillStyle = grad;
+                ctx.strokeStyle = tier.rimLight;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(0, 0, 28, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // 4. Inner Recessed Core
+                ctx.fillStyle = tier.core;
+                ctx.beginPath();
+                ctx.arc(0, 0, 21, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 5. Center Star Emblem
+                ctx.fillStyle = tier.star;
+                ctx.beginPath();
+                for (let i = 0; i < 10; i++) {
+                    const r = i % 2 === 0 ? 13 : 5.5;
+                    const a = (i * Math.PI) / 5 - Math.PI / 2;
+                    const sx = Math.cos(a) * r;
+                    const sy = Math.sin(a) * r;
+                    if (i === 0) ctx.moveTo(sx, sy);
+                    else ctx.lineTo(sx, sy);
+                }
+                ctx.closePath();
+                ctx.fill();
+
+                // 6. Animated Gleam / Shine Sweep
+                const shinePos = ((animTime * 2.2) % 120) - 60;
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(0, 0, 28, 0, Math.PI * 2);
+                ctx.clip();
+                ctx.rotate(-0.45);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+                ctx.fillRect(shinePos, -40, 10, 80);
+                ctx.restore();
+
+                ctx.restore();
+            }
+        }
+
+        // ----------------------------------------------------------------------------
+        // 8. MAIN GAME CONTROLLER & UI ORCHESTRATOR
+        // ----------------------------------------------------------------------------
+        const GAME_STATE = {
+            TITLE: 'TITLE',
+            READY: 'READY',
+            PLAYING: 'PLAYING',
+            PAUSED: 'PAUSED',
+            DYING: 'DYING',
+            GAMEOVER: 'GAMEOVER'
+        };
+
+        class GameController {
+            constructor() {
+                this.canvas = document.getElementById('game-canvas');
+                this.ctx = this.canvas.getContext('2d');
+
+                this.saveManager = new SaveManager();
+                this.sound = new SoundEngine(this.saveManager);
+                this.particles = new ParticleSystem(this.saveManager);
+                this.background = new ParallaxBackground();
+                this.bolt = new BoltAvian();
+                this.pipes = new PipeManager();
+
+                this.state = GAME_STATE.TITLE;
+                this.score = 0;
+                this.lastFrameTime = performance.now();
+                this.fpsSmooth = 60;
+                this.animTick = 0;
+
+                // Juice effects: Hit-stop freeze frames & screen shake
+                this.hitStopTimer = 0;
+                this.shakeTimer = 0;
+                this.shakeIntensity = 0;
+
+                // Scoreboard animated counter state
+                this.displayedScore = 0;
+                this.scoreTallyTarget = 0;
+
+                // Preview Bolt instance for Hangar Modal
+                this.previewBolt = new BoltAvian();
+                this.previewCanvas = document.getElementById('hangar-preview-canvas');
+                this.previewCtx = this.previewCanvas.getContext('2d');
+                this.medalCanvas = document.getElementById('medal-canvas');
+
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+
+                this.bindInputs();
+                this.syncSettingsUI();
+                this.updateHUD();
+                this.particles.initAmbientMotes(this.width, this.height);
+
+                requestAnimationFrame((t) => this.loop(t));
+            }
+
+            resizeCanvas() {
+                const rect = this.canvas.parentElement.getBoundingClientRect();
+                this.width = Math.max(320, Math.floor(rect.width));
+                this.height = Math.max(480, Math.floor(rect.height));
+                this.canvas.width = this.width;
+                this.canvas.height = this.height;
+                this.groundY = this.height - 96;
+
+                if (this.state === GAME_STATE.TITLE || this.state === GAME_STATE.READY) {
+                    this.bolt.x = Math.round(this.width * 0.28);
+                    this.bolt.y = Math.round(this.groundY * 0.46);
+                }
+            }
+
+            // ------------------------------------------------------------------------
+            // INPUT HANDLING (KEYBOARD, MOUSE, TOUCH)
+            // ------------------------------------------------------------------------
+            bindInputs() {
+                // Primary Flap / Action on Canvas
+                const handlePrimaryAction = (e) => {
+                    if (e.type === 'touchstart') {
+                        e.preventDefault();
+                    }
+                    if (this.isAnyModalOpen()) return;
+
+                    if (this.state === GAME_STATE.TITLE) {
+                        this.enterGetReady();
+                    } else if (this.state === GAME_STATE.READY) {
+                        this.startPlayingAndFlap();
+                    } else if (this.state === GAME_STATE.PLAYING) {
+                        this.performFlap();
+                    }
+                };
+
+                this.canvas.addEventListener('mousedown', handlePrimaryAction);
+                this.canvas.addEventListener('touchstart', handlePrimaryAction, { passive: false });
+
+                // Global Keyboard Controls
+                window.addEventListener('keydown', (e) => {
+                    if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
+                        e.preventDefault();
+                        if (this.isAnyModalOpen()) return;
+
+                        if (this.state === GAME_STATE.TITLE) {
+                            this.enterGetReady();
+                        } else if (this.state === GAME_STATE.READY) {
+                            this.startPlayingAndFlap();
+                        } else if (this.state === GAME_STATE.PLAYING) {
+                            this.performFlap();
+                        } else if (this.state === GAME_STATE.GAMEOVER) {
+                            this.enterGetReady();
+                        }
+                    } else if (e.code === 'KeyP' || e.code === 'Escape') {
+                        if (this.isAnyModalOpen()) {
+                            this.closeAllModals();
+                        } else if (this.state === GAME_STATE.PLAYING) {
+                            this.togglePause(true);
+                        } else if (this.state === GAME_STATE.PAUSED) {
+                            this.togglePause(false);
+                        }
+                    } else if (e.code === 'KeyH') {
+                        this.toggleHitboxInspector();
+                    } else if (e.code === 'KeyM') {
+                        this.toggleMute();
+                    }
+                });
+
+                // UI Buttons
+                document.getElementById('btn-start-game').addEventListener('click', () => {
+                    this.sound.playClick();
+                    this.enterGetReady();
+                });
+
+                document.getElementById('btn-replay').addEventListener('click', () => {
+                    this.sound.playClick();
+                    this.enterGetReady();
+                });
+
+                document.getElementById('btn-go-title').addEventListener('click', () => {
+                    this.sound.playClick();
+                    this.returnToTitle();
+                });
+
+                document.getElementById('btn-go-hangar').addEventListener('click', () => {
+                    this.sound.playClick();
+                    this.openHangarModal();
+                });
+
+                // Top HUD Quick Buttons
+                document.getElementById('btn-toggle-hitbox').addEventListener('click', () => {
+                    this.sound.playClick();
+                    this.toggleHitboxInspector();
+                });
+
+                document.getElementById('btn-toggle-mute').addEventListener('click', () => {
+                    this.toggleMute();
+                });
+
+                document.getElementById('btn-pause').addEventListener('click', () => {
+                    this.sound.playClick();
+                    if (this.state === GAME_STATE.PLAYING) {
+                        this.togglePause(true);
+                    } else if (this.state === GAME_STATE.PAUSED) {
+                        this.togglePause(false);
+                    }
+                });
+
+                // Pause Menu Buttons
+                document.getElementById('btn-resume').addEventListener('click', () => {
+                    this.sound.playClick();
+                    this.togglePause(false);
+                });
+
+                document.getElementById('btn-pause-restart').addEventListener('click', () => {
+                    this.sound.playClick();
+                    document.getElementById('screen-pause').classList.add('hidden');
+                    this.enterGetReady();
+                });
+
+                document.getElementById('btn-pause-menu').addEventListener('click', () => {
+                    this.sound.playClick();
+                    document.getElementById('screen-pause').classList.add('hidden');
+                    this.returnToTitle();
+                });
+
+                // Title Screen Modal Openers
+                document.getElementById('btn-open-hangar').addEventListener('click', () => {
+                    this.sound.playClick();
+                    this.openHangarModal();
+                });
+
+                document.getElementById('btn-open-stats').addEventListener('click', () => {
+                    this.sound.playClick();
+                    this.openStatsModal();
+                });
+
+                document.getElementById('btn-open-settings').addEventListener('click', () => {
+                    this.sound.playClick();
+                    document.getElementById('modal-settings').classList.remove('hidden');
+                });
+
+                // Close Modal Buttons
+                document.querySelectorAll('[data-close-modal]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        this.sound.playClick();
+                        const targetId = btn.getAttribute('data-close-modal');
+                        document.getElementById(targetId).classList.add('hidden');
+                    });
+                });
+
+                // Hangar Dev Override Button
+                document.getElementById('btn-dev-unlock-skins').addEventListener('click', () => {
+                    this.sound.playClick();
+                    this.saveManager.data.devUnlockAll = !this.saveManager.data.devUnlockAll;
+                    this.saveManager.save();
+                    this.populateHangarSkins();
+                });
+
+                // Reset Save Data with 2-Step Inline Confirmation (No window.confirm!)
+                let resetConfirmArmed = false;
+                const resetBtn = document.getElementById('btn-reset-save');
+                const resetLabel = document.getElementById('reset-confirm-label');
+                resetBtn.addEventListener('click', () => {
+                    this.sound.playClick();
+                    if (!resetConfirmArmed) {
+                        resetConfirmArmed = true;
+                        resetBtn.textContent = 'Confirm Purge';
+                        resetLabel.textContent = 'Click again to permanently reset:';
+                        resetLabel.classList.add('text-rose-400');
+                        setTimeout(() => {
+                            resetConfirmArmed = false;
+                            resetBtn.textContent = 'Purge Records';
+                            resetLabel.textContent = 'Erase persistent localStorage log?';
+                            resetLabel.classList.remove('text-rose-400');
+                        }, 3500);
+                    } else {
+                        resetConfirmArmed = false;
+                        this.saveManager.reset();
+                        this.syncSettingsUI();
+                        this.updateHUD();
+                        this.openStatsModal();
+                        resetBtn.textContent = 'Purge Records';
+                        resetLabel.textContent = 'All records cleared.';
+                    }
+                });
+
+                // Settings Controls
+                const volSlider = document.getElementById('slider-volume');
+                volSlider.addEventListener('input', (e) => {
+                    const val = parseInt(e.target.value, 10);
+                    this.saveManager.data.settings.volume = val;
+                    this.saveManager.data.settings.muted = val === 0;
+                    this.saveManager.save();
+                    this.syncSettingsUI();
+                });
+
+                document.getElementById('select-particles').addEventListener('change', (e) => {
+                    this.saveManager.data.settings.particleQuality = e.target.value;
+                    this.saveManager.save();
+                });
+
+                document.getElementById('select-timeofday').addEventListener('change', (e) => {
+                    this.saveManager.data.settings.timeOfDay = e.target.value;
+                    this.saveManager.save();
+                });
+
+                document.getElementById('chk-screenshake').addEventListener('change', (e) => {
+                    this.saveManager.data.settings.screenShake = e.target.checked;
+                    this.saveManager.save();
+                });
+
+                document.getElementById('chk-hitbox').addEventListener('change', (e) => {
+                    this.saveManager.data.settings.showHitbox = e.target.checked;
+                    this.saveManager.save();
+                    this.syncSettingsUI();
+                });
+
+                document.getElementById('chk-telemetry').addEventListener('change', (e) => {
+                    this.saveManager.data.settings.showTelemetry = e.target.checked;
+                    this.saveManager.save();
+                    this.syncSettingsUI();
+                });
+            }
+
+            isAnyModalOpen() {
+                return (
+                    !document.getElementById('modal-hangar').classList.contains('hidden') ||
+                    !document.getElementById('modal-stats').classList.contains('hidden') ||
+                    !document.getElementById('modal-settings').classList.contains('hidden')
+                );
+            }
+
+            closeAllModals() {
+                document.getElementById('modal-hangar').classList.add('hidden');
+                document.getElementById('modal-stats').classList.add('hidden');
+                document.getElementById('modal-settings').classList.add('hidden');
+            }
+
+            // ------------------------------------------------------------------------
+            // GAME STATE TRANSITIONS
+            // ------------------------------------------------------------------------
+            returnToTitle() {
+                this.state = GAME_STATE.TITLE;
+                this.score = 0;
+                this.pipes.reset();
+                this.bolt.reset(Math.round(this.width * 0.28), Math.round(this.groundY * 0.44));
+
+                document.getElementById('screen-title').classList.remove('hidden');
+                document.getElementById('screen-ready').classList.add('hidden');
+                document.getElementById('screen-gameover').classList.add('hidden');
+                document.getElementById('screen-pause').classList.add('hidden');
+                document.getElementById('live-score-container').classList.add('hidden');
+                document.getElementById('btn-pause').classList.add('hidden');
+                this.updateHUD();
+            }
+
+            enterGetReady() {
+                this.state = GAME_STATE.READY;
+                this.score = 0;
+                this.pipes.reset();
+                this.bolt.reset(Math.round(this.width * 0.28), Math.round(this.groundY * 0.46));
+
+                document.getElementById('screen-title').classList.add('hidden');
+                document.getElementById('screen-gameover').classList.add('hidden');
+                document.getElementById('screen-pause').classList.add('hidden');
+                document.getElementById('screen-ready').classList.remove('hidden');
+
+                const liveContainer = document.getElementById('live-score-container');
+                liveContainer.classList.remove('hidden');
+                liveContainer.classList.add('flex');
+                document.getElementById('live-score').textContent = '0';
+                document.getElementById('btn-pause').classList.add('hidden');
+                this.updateHUD();
+            }
+
+            startPlayingAndFlap() {
+                this.state = GAME_STATE.PLAYING;
+                document.getElementById('screen-ready').classList.add('hidden');
+                const pauseBtn = document.getElementById('btn-pause');
+                pauseBtn.classList.remove('hidden');
+                pauseBtn.classList.add('flex');
+
+                this.performFlap();
+            }
+
+            performFlap() {
+                // Prevent flapping way above top screen edge
+                if (this.bolt.y > -20) {
+                    this.bolt.flap();
+                    this.sound.playFlap();
+                    this.saveManager.data.totalFlaps++;
+                    const activeSkin = this.saveManager.getActiveSkin();
+                    this.particles.spawnExhaust(this.bolt.x - 18, this.bolt.y + 3, activeSkin, true);
+                }
+            }
+
+            togglePause(shouldPause) {
+                if (shouldPause && this.state === GAME_STATE.PLAYING) {
+                    this.state = GAME_STATE.PAUSED;
+                    document.getElementById('screen-pause').classList.remove('hidden');
+                } else if (!shouldPause && this.state === GAME_STATE.PAUSED) {
+                    this.state = GAME_STATE.PLAYING;
+                    document.getElementById('screen-pause').classList.add('hidden');
+                    this.lastFrameTime = performance.now();
+                }
+            }
+
+            triggerCollision(hitGroundDirectly = false) {
+                if (this.bolt.isDead) return;
+                this.bolt.isDead = true;
+
+                // Snapshot which skins were unlocked prior to this run
+                this.preRunUnlockedCount = CHASSIS_SKINS.filter(s => s.isUnlocked(this.saveManager.data)).length;
+
+                // Flash screen
+                const flash = document.getElementById('flash-overlay');
+                flash.style.opacity = '0.85';
+                setTimeout(() => { flash.style.opacity = '0'; }, 90);
+
+                // Hit-stop & screen shake
+                if (this.saveManager.data.settings.screenShake) {
+                    this.hitStopTimer = 5; // ~80ms freeze frame at 60Hz
+                    this.shakeTimer = 18;
+                    this.shakeIntensity = 9;
+                }
+
+                // Spawn brass sparks
+                this.particles.spawnCollisionSparks(this.bolt.x, this.bolt.y);
+
+                if (hitGroundDirectly) {
+                    this.sound.playHitGround();
+                    document.getElementById('gameover-reason').textContent = 'Impact with Pressurized Rail Track';
+                    this.presentGameOver();
+                } else {
+                    this.sound.playHitPipe();
+                    document.getElementById('gameover-reason').textContent = 'Collision with High-Pressure Conduit';
+                    this.state = GAME_STATE.DYING;
+                    this.bolt.vy = -3.5; // Slight knockback arc before falling to ground
+                }
+            }
+
+            presentGameOver() {
+                this.state = GAME_STATE.GAMEOVER;
+                document.getElementById('btn-pause').classList.add('hidden');
+                document.getElementById('live-score-container').classList.add('hidden');
+
+                // Update persistent stats
+                const data = this.saveManager.data;
+                data.totalGames++;
+                const isNewBest = this.score > data.highScore;
+                if (isNewBest) {
+                    data.highScore = this.score;
+                }
+
+                // Award Medal
+                const medalTier = MedalRenderer.getMedalTier(this.score);
+                if (medalTier) {
+                    data.medals[medalTier.id] = (data.medals[medalTier.id] || 0) + 1;
+                    document.getElementById('medal-title').textContent = medalTier.name;
+                    setTimeout(() => this.sound.playMedalFanfare(), 320);
+                } else {
+                    document.getElementById('medal-title').textContent = 'Score 10 for Bronze';
+                }
+
+                this.saveManager.save();
+                this.updateHUD();
+
+                // Check if a new Chassis skin unlocked
+                const postRunUnlockedCount = CHASSIS_SKINS.filter(s => s.isUnlocked(this.saveManager.data)).length;
+                const unlockBanner = document.getElementById('unlock-banner');
+                if (postRunUnlockedCount > (this.preRunUnlockedCount || 1)) {
+                    unlockBanner.classList.remove('hidden');
+                    document.getElementById('unlock-banner-text').textContent = 'New Clockwork Chassis Unlocked in Hangar!';
+                } else {
+                    unlockBanner.classList.add('hidden');
+                }
+
+                // Configure Scoreboard UI
+                const newBestBadge = document.getElementById('badge-new-best');
+                if (isNewBest && this.score > 0) {
+                    newBestBadge.classList.remove('hidden');
+                } else {
+                    newBestBadge.classList.add('hidden');
+                }
+
+                document.getElementById('go-best').textContent = data.highScore;
+                document.getElementById('go-score').textContent = '0';
+                this.displayedScore = 0;
+                this.scoreTallyTarget = this.score;
+
+                document.getElementById('screen-gameover').classList.remove('hidden');
+            }
+
+            // ------------------------------------------------------------------------
+            // UI & MODAL MANAGEMENT
+            // ------------------------------------------------------------------------
+            updateHUD() {
+                const activeSkin = this.saveManager.getActiveSkin();
+                document.getElementById('hud-best-score').textContent = this.saveManager.data.highScore;
+                document.getElementById('title-skin-name').textContent = activeSkin.name;
+            }
+
+            syncSettingsUI() {
+                const s = this.saveManager.data.settings;
+                document.getElementById('slider-volume').value = s.muted ? 0 : s.volume;
+                document.getElementById('setting-vol-label').textContent = s.muted ? 'Muted' : `${s.volume}%`;
+                document.getElementById('select-particles').value = s.particleQuality;
+                document.getElementById('select-timeofday').value = s.timeOfDay;
+                document.getElementById('chk-screenshake').checked = s.screenShake;
+                document.getElementById('chk-hitbox').checked = s.showHitbox;
+                document.getElementById('chk-telemetry').checked = s.showTelemetry;
+
+                // Top bar icon states
+                document.getElementById('icon-sound-on').classList.toggle('hidden', s.muted || s.volume === 0);
+                document.getElementById('icon-sound-off').classList.toggle('hidden', !(s.muted || s.volume === 0));
+
+                const hitboxBtn = document.getElementById('btn-toggle-hitbox');
+                if (s.showHitbox) {
+                    hitboxBtn.classList.add('border-cyan-400', 'text-cyan-300');
+                } else {
+                    hitboxBtn.classList.remove('border-cyan-400', 'text-cyan-300');
+                }
+
+                const telPanel = document.getElementById('telemetry-panel');
+                telPanel.classList.toggle('hidden', !s.showTelemetry);
+            }
+
+            toggleHitboxInspector() {
+                const s = this.saveManager.data.settings;
+                s.showHitbox = !s.showHitbox;
+                this.saveManager.save();
+                this.syncSettingsUI();
+            }
+
+            toggleMute() {
+                const s = this.saveManager.data.settings;
+                s.muted = !s.muted;
+                if (!s.muted && s.volume === 0) s.volume = 75;
+                this.saveManager.save();
+                this.syncSettingsUI();
+                if (!s.muted) this.sound.playClick();
+            }
+
+            openHangarModal() {
+                this.populateHangarSkins();
+                document.getElementById('modal-hangar').classList.remove('hidden');
+            }
+
+            populateHangarSkins() {
+                const container = document.getElementById('skins-list-container');
+                container.innerHTML = '';
+                const saveData = this.saveManager.data;
+                const activeSkin = this.saveManager.getActiveSkin();
+
+                document.getElementById('preview-skin-title').textContent = activeSkin.name;
+                document.getElementById('preview-skin-desc').textContent = activeSkin.description;
+
+                CHASSIS_SKINS.forEach(skin => {
+                    const unlocked = skin.isUnlocked(saveData);
+                    const isSelected = activeSkin.id === skin.id;
+
+                    const card = document.createElement('div');
+                    card.className = `p-3 rounded-xl border transition flex items-center justify-between gap-3 ${
+                        isSelected
+                            ? 'bg-amber-950/40 border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]'
+                            : unlocked
+                                ? 'bg-slate-900/90 border-slate-700 hover:border-amber-500/50 cursor-pointer'
+                                : 'bg-slate-950/60 border-slate-800/80 opacity-75'
+                    }`;
+
+                    // Color swatch + info
+                    const left = document.createElement('div');
+                    left.className = 'flex items-center gap-3 min-w-0';
+
+                    const swatch = document.createElement('div');
+                    swatch.className = 'w-10 h-10 rounded-lg border-2 shrink-0 flex items-center justify-center shadow-inner';
+                    swatch.style.background = `linear-gradient(135deg, ${skin.colors.bodyLight}, ${skin.colors.bodyMid}, ${skin.colors.bodyDark})`;
+                    swatch.style.borderColor = skin.colors.trim;
+
+                    const dot = document.createElement('div');
+                    dot.className = 'w-3 h-3 rounded-full';
+                    dot.style.backgroundColor = skin.colors.lensGlow;
+                    swatch.appendChild(dot);
+
+                    const textWrap = document.createElement('div');
+                    textWrap.className = 'min-w-0';
+                    const titleEl = document.createElement('div');
+                    titleEl.className = 'text-sm font-bold text-white truncate';
+                    titleEl.textContent = skin.name;
+
+                    const subEl = document.createElement('div');
+                    subEl.className = 'text-[11px] text-slate-400 truncate';
+                    subEl.textContent = unlocked ? skin.subtitle : `Locked: ${skin.unlockText}`;
+
+                    textWrap.appendChild(titleEl);
+                    textWrap.appendChild(subEl);
+                    left.appendChild(swatch);
+                    left.appendChild(textWrap);
+
+                    // Action badge / button
+                    const right = document.createElement('div');
+                    right.className = 'shrink-0';
+                    if (isSelected) {
+                        right.innerHTML = `<span class="px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-400 text-amber-300 font-mono-tech text-xs font-bold">Equipped</span>`;
+                    } else if (unlocked) {
+                        const selectBtn = document.createElement('button');
+                        selectBtn.className = 'mech-btn px-3 py-1.5 rounded-lg text-xs uppercase font-display';
+                        selectBtn.textContent = 'Equip';
+                        selectBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            this.sound.playClick();
+                            this.saveManager.data.selectedSkin = skin.id;
+                            this.saveManager.save();
+                            this.updateHUD();
+                            this.populateHangarSkins();
+                        });
+                        right.appendChild(selectBtn);
+                    } else {
+                        right.innerHTML = `
+                            <div class="p-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-500">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                </svg>
+                            </div>
+                        `;
+                    }
+
+                    card.appendChild(left);
+                    card.appendChild(right);
+
+                    if (unlocked && !isSelected) {
+                        card.addEventListener('click', () => {
+                            this.sound.playClick();
+                            this.saveManager.data.selectedSkin = skin.id;
+                            this.saveManager.save();
+                            this.updateHUD();
+                            this.populateHangarSkins();
+                        });
+                    }
+
+                    container.appendChild(card);
+                });
+            }
+
+            openStatsModal() {
+                const d = this.saveManager.data;
+                document.getElementById('stat-high-score').textContent = d.highScore;
+                document.getElementById('stat-total-pipes').textContent = d.totalPipes;
+                document.getElementById('stat-games-played').textContent = d.totalGames;
+                document.getElementById('stat-total-flaps').textContent = d.totalFlaps;
+
+                document.getElementById('medal-count-bronze').textContent = d.medals.bronze || 0;
+                document.getElementById('medal-count-silver').textContent = d.medals.silver || 0;
+                document.getElementById('medal-count-gold').textContent = d.medals.gold || 0;
+                document.getElementById('medal-count-platinum').textContent = d.medals.platinum || 0;
+
+                document.getElementById('modal-stats').classList.remove('hidden');
+            }
+
+            // ------------------------------------------------------------------------
+            // MAIN 60HZ DELTA-TIME GAME LOOP
+            // ------------------------------------------------------------------------
+            loop(timestamp) {
+                const rawDt = timestamp - this.lastFrameTime;
+                this.lastFrameTime = timestamp;
+
+                // Clamp delta time to prevent huge physics jumps if tab was backgrounded
+                const clampedMs = Math.min(50, Math.max(1, rawDt));
+                const dtScale = clampedMs / 16.6667; // 1.0 = exact 60fps step
+
+                // Calculate smoothed FPS for telemetry
+                const instantFps = 1000 / Math.max(1, rawDt);
+                this.fpsSmooth = this.fpsSmooth * 0.9 + instantFps * 0.1;
+                this.animTick += dtScale;
+
+                if (this.hitStopTimer > 0) {
+                    this.hitStopTimer -= dtScale;
+                } else {
+                    this.update(dtScale, clampedMs);
+                }
+
+                this.draw();
+                this.updateAuxiliaryCanvases(dtScale);
+
+                requestAnimationFrame((t) => this.loop(t));
+            }
+
+            update(dtScale, clampedMs) {
+                const activeSkin = this.saveManager.getActiveSkin();
+
+                if (this.shakeTimer > 0) {
+                    this.shakeTimer = Math.max(0, this.shakeTimer - dtScale);
+                }
+
+                if (this.state === GAME_STATE.TITLE || this.state === GAME_STATE.READY) {
+                    this.background.update(dtScale, this.pipes.scrollSpeed, this.width, true);
+                    this.bolt.updateHover(dtScale, this.groundY * 0.45);
+                    if (Math.random() < 0.35 * dtScale) {
+                        this.particles.spawnExhaust(this.bolt.x - 18, this.bolt.y + 3, activeSkin, false);
+                    }
+                    this.particles.update(dtScale, this.width, this.height);
+                } else if (this.state === GAME_STATE.PLAYING) {
+                    this.background.update(dtScale, this.pipes.scrollSpeed, this.width, true);
+                    this.bolt.updatePhysics(dtScale, this.groundY);
+
+                    // Continuous subtle idle steam trail
+                    if (Math.random() < 0.45 * dtScale) {
+                        this.particles.spawnExhaust(this.bolt.x - 18, this.bolt.y + 3, activeSkin, false);
+                    }
+
+                    this.pipes.update(dtScale, this.width, this.groundY, this.particles);
+                    this.particles.update(dtScale, this.width, this.height);
+
+                    // Check Pipe Collisions & Score Increments
+                    const hitPipe = this.pipes.checkCollisionAndScore(this.bolt, (scoreX, scoreY) => {
+                        this.score++;
+                        this.saveManager.data.totalPipes++;
+                        this.sound.playScore();
+                        this.particles.spawnScoreBurst(scoreX, scoreY);
+
+                        const scoreEl = document.getElementById('live-score');
+                        scoreEl.textContent = this.score;
+                        scoreEl.classList.remove('score-pop');
+                        void scoreEl.offsetWidth;
+                        scoreEl.classList.add('score-pop');
+                    });
+
+                    if (hitPipe) {
+                        this.triggerCollision(false);
+                    } else if (this.bolt.y + this.bolt.collisionRadius >= this.groundY) {
+                        this.triggerCollision(true);
+                    }
+                } else if (this.state === GAME_STATE.DYING) {
+                    // Bolt nose-dives to the track after hitting a pipe
+                    this.bolt.updatePhysics(dtScale, this.groundY);
+                    this.particles.update(dtScale, this.width, this.height);
+
+                    if (this.bolt.y + this.bolt.collisionRadius >= this.groundY) {
+                        this.sound.playHitGround();
+                        if (this.saveManager.data.settings.screenShake) {
+                            this.shakeTimer = 10;
+                            this.shakeIntensity = 5;
+                        }
+                        this.presentGameOver();
+                    }
+                } else if (this.state === GAME_STATE.GAMEOVER) {
+                    this.particles.update(dtScale, this.width, this.height);
+
+                    // Animate Scoreboard Ticking Counter
+                    if (this.displayedScore < this.scoreTallyTarget) {
+                        const step = Math.max(0.25, (this.scoreTallyTarget - this.displayedScore) * 0.12) * dtScale;
+                        const prevInt = Math.floor(this.displayedScore);
+                        this.displayedScore = Math.min(this.scoreTallyTarget, this.displayedScore + step);
+                        const nextInt = Math.floor(this.displayedScore);
+                        if (nextInt !== prevInt) {
+                            document.getElementById('go-score').textContent = nextInt;
+                            this.sound.playTick(1 + (nextInt / Math.max(10, this.scoreTallyTarget)) * 0.5);
+                        }
+                    }
+                }
+
+                // Update Live Telemetry Readout if active
+                if (this.saveManager.data.settings.showTelemetry) {
+                    document.getElementById('tel-fps').textContent = Math.round(this.fpsSmooth);
+                    document.getElementById('tel-dt').textContent = clampedMs.toFixed(1);
+                    document.getElementById('tel-y').textContent = Math.round(this.bolt.y);
+                    document.getElementById('tel-vy').textContent = this.bolt.vy.toFixed(1);
+                    document.getElementById('tel-particles').textContent = this.particles.particles.length;
+                    document.getElementById('tel-pipes').textContent = this.pipes.pipes.length;
+                }
+            }
+
+            // ------------------------------------------------------------------------
+            // RENDERING PIPELINE
+            // ------------------------------------------------------------------------
+            draw() {
+                const ctx = this.ctx;
+                ctx.save();
+
+                // Apply kinetic camera shake if active
+                if (this.shakeTimer > 0) {
+                    const mag = (this.shakeTimer / 18) * this.shakeIntensity;
+                    const dx = (Math.random() - 0.5) * mag * 2;
+                    const dy = (Math.random() - 0.5) * mag * 2;
+                    ctx.translate(dx, dy);
+                }
+
+                // Determine Atmospheric Palette
+                const atmoKey = this.background.getAtmosphereKey(
+                    this.score,
+                    this.saveManager.data.settings.timeOfDay
+                );
+                const pal = ATMOSPHERE_PALETTES[atmoKey];
+                document.getElementById('atmosphere-indicator').textContent = pal.name;
+
+                // 1. Sky, Sun/Moon, Airships & Parallax City Layers
+                this.background.drawSkyAndCelestial(ctx, this.width, this.height, this.groundY, pal, atmoKey);
+                this.background.drawIndustrialLayers(ctx, this.width, this.groundY, pal);
+
+                // 2. Industrial Brass Pipes
+                const showHitbox = this.saveManager.data.settings.showHitbox;
+                this.pipes.draw(ctx, this.groundY, showHitbox);
+
+                // 3. Particles (Steam Puffs, Sparks, Ambient Motes)
+                this.particles.draw(ctx);
+
+                // 4. Foreground Scrolling Railway Track
+                this.background.drawForegroundTrack(ctx, this.width, this.height, this.groundY);
+
+                // 5. "GET READY" Vector Flight Arc Guide
+                if (this.state === GAME_STATE.READY) {
+                    this.drawGetReadyGuide(ctx);
+                }
+
+                // 6. Bolt the Brass-Wing
+                const activeSkin = this.saveManager.getActiveSkin();
+                this.bolt.draw(ctx, activeSkin, showHitbox);
+
+                ctx.restore();
+            }
+
+            drawGetReadyGuide(ctx) {
+                ctx.save();
+                const bx = this.bolt.x;
+                const by = this.bolt.y;
+
+                // Parabolic dashed flight arc preview
+                ctx.strokeStyle = 'rgba(253, 230, 138, 0.55)';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(bx + 24, by);
+                ctx.quadraticCurveTo(bx + 55, by - 48, bx + 92, by - 12);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Pulsing target ring below Bolt
+                const pulse = 0.5 + 0.5 * Math.sin(this.animTick * 0.15);
+                ctx.strokeStyle = `rgba(56, 189, 248, ${0.3 + pulse * 0.5})`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(bx, by + 42, 12 + pulse * 4, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            updateAuxiliaryCanvases(dtScale) {
+                // Render Hangar Live Preview Canvas if Hangar Modal is open
+                if (!document.getElementById('modal-hangar').classList.contains('hidden')) {
+                    const pCtx = this.previewCtx;
+                    const pw = this.previewCanvas.width;
+                    const ph = this.previewCanvas.height;
+                    pCtx.clearRect(0, 0, pw, ph);
+
+                    this.previewBolt.x = pw * 0.5;
+                    this.previewBolt.updateHover(dtScale, ph * 0.52);
+                    const skin = this.saveManager.getActiveSkin();
+                    this.previewBolt.draw(pCtx, skin, false);
+                }
+
+                // Render Scoreboard Medal Canvas if Game Over screen is open
+                if (this.state === GAME_STATE.GAMEOVER) {
+                    MedalRenderer.render(this.medalCanvas, this.score, this.animTick);
+                }
+            }
+        }
+
+        // Launch the Engine when DOM is ready
+        window.onload = function () {
+            window.boltGame = new GameController();
+        };
+    </script>
+</body>
+</html>
