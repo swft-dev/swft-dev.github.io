@@ -203,10 +203,10 @@
 <body class="relative flex items-center justify-center w-screen h-screen bg-slate-950 select-none overflow-hidden">
 
     <!-- Ambient Outer Frame Background for Ultrawide Desktop Screens -->
-    <div class="fixed inset-0 pointer-events-none opacity-30 bg-[radial-gradient(circle_at_center,_#1e293b_0%,_#020617_100%)]"></div>
+    <div class="fixed inset-0 pointer-events-none opacity-30 bg-[radial-gradient(circle_at_center,#1e293b_0%,#020617_100%)]"></div>
 
     <!-- Main Game Container: Responsive Fullscreen or Centered Arcade Cabinet Ratio -->
-    <div id="game-wrapper" class="relative w-full h-full max-w-[540px] max-h-[960px] sm:h-[94vh] sm:rounded-2xl overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.95)] border-0 sm:border-4 sm:border-amber-700/80 bg-slate-900 flex flex-col">
+    <div id="game-wrapper" class="relative w-full h-full max-w-135 max-h-240 sm:h-[94vh] sm:rounded-2xl overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.95)] border-0 sm:border-4 sm:border-amber-700/80 bg-slate-900 flex flex-col">
         
         <!-- Primary 2D Render Canvas -->
         <canvas id="game-canvas" class="block w-full h-full cursor-pointer"></canvas>
@@ -288,7 +288,7 @@
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/40 text-amber-300 text-xs font-mono-tech uppercase tracking-widest mb-2 shadow-inner">
                     <span>Aether-Works Automaton No. 04</span>
                 </div>
-                <h1 class="font-display text-4xl sm:text-5xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-400 to-amber-700 drop-shadow-[0_4px_10px_rgba(0,0,0,0.9)]">
+                <h1 class="font-display text-4xl sm:text-5xl font-black tracking-wider text-transparent bg-clip-text bg-linear-to-b from-amber-200 via-amber-400 to-amber-700 drop-shadow-[0_4px_10px_rgba(0,0,0,0.9)]">
                     BOLT
                 </h1>
                 <p class="font-display text-sm sm:text-base font-bold tracking-[0.26em] text-amber-100 uppercase -mt-1 drop-shadow">
@@ -344,7 +344,7 @@
         <!-- ================================================================= -->
         <!-- "GET READY" OVERLAY                                               -->
         <!-- ================================================================= -->
-        <div id="screen-ready" class="hidden pointer-events-none absolute inset-0 flex flex-col items-center justify-center p-6 z-20">
+        <div id="screen-ready" class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center p-6 z-20">
             <div class="mt-16 text-center">
                 <h2 class="font-display text-3xl sm:text-4xl font-black text-amber-300 tracking-wider uppercase drop-shadow-[0_4px_8px_rgba(0,0,0,0.95)]">
                     Prime Thrusters
@@ -358,7 +358,7 @@
         <!-- ================================================================= -->
         <!-- PAUSE OVERLAY                                                     -->
         <!-- ================================================================= -->
-        <div id="screen-pause" class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-6 z-40">
+        <div id="screen-pause" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-6 z-40">
             <div class="brass-panel w-full max-w-xs rounded-2xl p-6 text-center modal-enter">
                 <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
                 <h3 class="font-display text-2xl font-bold text-amber-300 tracking-wider uppercase mb-1">Chronometer Halted</h3>
@@ -380,11 +380,11 @@
         <!-- ================================================================= -->
         <!-- GAME OVER SCOREBOARD OVERLAY                                      -->
         <!-- ================================================================= -->
-        <div id="screen-gameover" class="hidden absolute inset-0 bg-slate-950/75 backdrop-blur-[3px] flex flex-col items-center justify-center p-4 sm:p-6 z-30">
+        <div id="screen-gameover" class="absolute inset-0 bg-slate-950/75 backdrop-blur-[3px] flex flex-col items-center justify-center p-4 sm:p-6 z-30">
             <div class="w-full max-w-sm modal-enter">
                 <!-- Header Banner -->
                 <div class="text-center mb-3">
-                    <h2 class="font-display text-3xl sm:text-4xl font-black tracking-wider uppercase text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-400 to-amber-700 drop-shadow-[0_4px_6px_rgba(0,0,0,0.95)]">
+                    <h2 class="font-display text-3xl sm:text-4xl font-black tracking-wider uppercase text-transparent bg-clip-text bg-linear-to-b from-amber-200 via-amber-400 to-amber-700 drop-shadow-[0_4px_6px_rgba(0,0,0,0.95)]">
                         System Failure
                     </h2>
                     <p id="gameover-reason" class="text-xs font-mono-tech text-amber-200/80 uppercase tracking-widest">
@@ -426,7 +426,7 @@
                     </div>
 
                     <!-- Unlock Notification Banner (If a new skin or medal was earned) -->
-                    <div id="unlock-banner" class="hidden mt-4 pt-3 border-t border-amber-500/30 flex items-center justify-center gap-2 text-xs text-emerald-300 font-semibold">
+                    <div id="unlock-banner" class="mt-4 pt-3 border-t border-amber-500/30 flex items-center justify-center gap-2 text-xs text-emerald-300 font-semibold">
                         <svg class="w-4 h-4 shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <polyline points="20 6 9 17 4 12"/>
                         </svg>
@@ -466,7 +466,7 @@
         <!-- ================================================================= -->
         <!-- HANGAR / CHASSIS SKINS MODAL                                      -->
         <!-- ================================================================= -->
-        <div id="modal-hangar" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 z-50">
+        <div id="modal-hangar" class="absolute inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 z-50">
             <div class="brass-panel w-full max-w-md max-h-[86vh] rounded-2xl p-5 flex flex-col modal-enter">
                 <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
                 
@@ -485,7 +485,7 @@
 
                 <!-- Live Skin Preview Box -->
                 <div class="my-3 bg-slate-950/90 border border-amber-500/40 rounded-xl p-3 flex items-center gap-4">
-                    <canvas id="hangar-preview-canvas" width="110" height="90" class="w-[110px] h-[90px] bg-slate-900/80 rounded-lg border border-slate-700 shrink-0"></canvas>
+                    <canvas id="hangar-preview-canvas" width="110" height="90" class="w-27.5 h-22.5 bg-slate-900/80 rounded-lg border border-slate-700 shrink-0"></canvas>
                     <div class="flex-1 min-w-0">
                         <div class="text-[11px] font-mono-tech uppercase text-amber-400" id="preview-skin-tag">Active Chassis</div>
                         <h4 class="font-display text-lg font-bold text-white truncate" id="preview-skin-title">Brass Classic</h4>
@@ -513,7 +513,7 @@
         <!-- ================================================================= -->
         <!-- FLIGHT LOG / MEDALS & STATS MODAL                                 -->
         <!-- ================================================================= -->
-        <div id="modal-stats" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 z-50">
+        <div id="modal-stats" class="absolute inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 z-50">
             <div class="brass-panel w-full max-w-md max-h-[86vh] rounded-2xl p-5 flex flex-col modal-enter">
                 <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
 
@@ -599,7 +599,7 @@
         <!-- ================================================================= -->
         <!-- SETTINGS / CALIBRATION MODAL                                      -->
         <!-- ================================================================= -->
-        <div id="modal-settings" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 z-50">
+        <div id="modal-settings" class="absolute inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 z-50">
             <div class="brass-panel w-full max-w-md max-h-[86vh] rounded-2xl p-5 flex flex-col modal-enter">
                 <div class="rivet-tl"></div><div class="rivet-tr"></div><div class="rivet-bl"></div><div class="rivet-br"></div>
 
